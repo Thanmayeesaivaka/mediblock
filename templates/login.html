@@ -1,37 +1,55 @@
 <!DOCTYPE html>
-<html>
->
+<html lang="en">
 <head>
-    <title>MediBlock Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediBlock</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-    <div class="card">
-        <h1>🏥 MediBlock</h1>
-        <h3 style="text-align:center;">Secure Healthcare Blockchain</h3>
 
-        <form action="/login" method="POST">
-            <input type="text" name="username" placeholder="Username" required>
+<div class="bg"></div>
 
-            <input type="password" name="password" placeholder="Password" required>
+<div class="login-container">
 
+    <div class="logo">
+        🏥 <span>MediBlock</span>
+    </div>
+    <p class="subtitle">Secure Healthcare Blockchain</p>
+
+    <form action="/login" method="POST">
+
+        <div class="input-group">
+            <input type="text" name="username" required>
+            <label>Username</label>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" required>
+            <label>Password</label>
+        </div>
+
+        <div class="input-group">
             <select name="role" required>
-                <option value="">Select Role</option>
-                <option value="admin">Admin</option>
+                <option value="" disabled selected></option>
                 <option value="doctor">Doctor</option>
                 <option value="patient">Patient</option>
                 <option value="insurance">Insurance</option>
             </select>
+            <label>Select Role</label>
+        </div>
 
-            <button type="submit">Login</button>
-        </form>
+        <button class="btn">Login</button>
 
-        <p style="text-align:center;margin-top:10px;">
-            New user? <a href="/register" style="color:#00d2ff;">Register here</a>
-        </p>
+    </form>
+
+    <div class="register">
+        New user? <a href="/register">Create account</a>
     </div>
+
 </div>
+
 </body>
 </html>
