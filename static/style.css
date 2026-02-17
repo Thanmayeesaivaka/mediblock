@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:linear-gradient(120deg,#4facfe,#00f2fe);
+    min-height:100vh;
+    display:flex;
+}
+
+/* Sidebar */
+.sidebar{
+    width:230px;
+    background:#0f172a;
+    color:white;
+    height:100vh;
+    padding:20px;
+    position:fixed;
+}
+
+.sidebar h2{
+    margin-bottom:30px;
+    text-align:center;
+}
+
+.sidebar a{
+    display:block;
+    color:#cbd5e1;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+.sidebar a:hover{
+    background:#1e293b;
+    color:white;
+}
+
+/* Main content */
+.main{
+    margin-left:230px;
+    width:100%;
+    padding:25px;
+}
+
+.header{
+    background:white;
+    padding:18px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    margin-top:20px;
+}
+
+h1,h2,h3{
+    color:#0f172a;
+}
+
+/* Forms */
+input, select, textarea{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+button{
+    background:linear-gradient(45deg,#4facfe,#00f2fe);
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+/* Table */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    background:#0f172a;
+    color:white;
+    padding:10px;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+/* Status badges */
+.valid{
+    background:#16a34a;
+    color:white;
+    padding:6px 12px;
+    border-radius:20px;
+}
+
+.invalid{
+    background:#dc2626;
+    color:white;
+    padding:6px 12px;
+    border-radius:20px;
+}
+
+/* Logout button */
+.logout{
+    float:right;
+    background:#ef4444;
+    padding:8px 14px;
+    border-radius:8px;
+    color:white;
+    text-decoration:none;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+<div class="nav">
+    <h2>Admin Dashboard</h2>
+    <a href="/logout" class="logout">Logout</a>
+</div>
+
+<div class="card">
+<h3>System Info</h3>
+<p>Welcome Admin: <b>{{user}}</b></p>
+<p>MediBlock Blockchain Healthcare System Running</p>
+<p>You can monitor activity from Doctor & Patient panels.</p>
+</div>
+
+</div>
+</body>
+</html>

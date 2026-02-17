@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+<div class="nav">
+    <h2>Patient Records</h2>
+    <a href="/logout" class="logout">Logout</a>
+</div>
+
+<div class="card">
+<h3>Blockchain Status:
+{% if valid %}
+<span class="valid">SECURE ✔</span>
+{% else %}
+<span class="invalid">TAMPERED ❌</span>
+{% endif %}
+</h3>
+</div>
+
+<div class="card">
+<table>
+<tr>
+<th>ID</th>
+<th>Doctor</th>
+<th>Diagnosis</th>
+<th>Prescription</th>
+<th>Date</th>
+</tr>
+
+{% for b in blocks %}
+{% if b.patient == session['user'] %}
+<tr>
+<td>{{b.index}}</td>
+<td>{{b.doctor}}</td>
+<td>{{b.diagnosis}}</td>
+<td>{{b.prescription}}</td>
+<td>{{b.timestamp}}</td>
+</tr>
+{% endif %}
+{% endfor %}
+
+</table>
+</div>
+
+</div>
+</body>
+</html>
