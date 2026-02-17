@@ -25,5 +25,5 @@ def find_user(username, password, role):
 def load_blocks():
     return list(blocks.find({}, {"_id": 0}))
 
-def save_block(block):
+def add_block(block):
     blocks.insert_one(block)
