@@ -7,51 +7,39 @@
 </head>
 <body>
 
-<div class="dashboard-container">
+<div class="gradient-bg">
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>🏥 MediBlock</h2>
-        <p>Doctor Panel</p>
-
-        <a href="/doctor">Dashboard</a>
-        <a href="/logout" class="logout-btn">Logout</a>
+    <div class="header">
+        <h1>🏥 MediBlock</h1>
+        <a href="/logout" class="logout">Logout</a>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+    <div class="content">
 
-        <h1>Doctor Dashboard</h1>
+        <h2>Doctor Dashboard</h2>
 
-        <!-- Add Medical Record Form -->
-        <div class="form-card">
-            <h3>Add Medical Record</h3>
+        <!-- Add Record -->
+        <form method="POST" class="record-form">
 
-            <form method="POST">
+            <input type="text" name="patient" placeholder="Patient Username" required>
+            <input type="text" name="diagnosis" placeholder="Diagnosis" required>
+            <input type="text" name="prescription" placeholder="Prescription" required>
 
-                <input type="text" name="patient" placeholder="Patient Username" required>
-                <input type="text" name="diagnosis" placeholder="Diagnosis" required>
-                <input type="text" name="prescription" placeholder="Prescription" required>
+            <button type="submit">Add Record</button>
 
-                <button type="submit">Add to Blockchain</button>
+        </form>
 
-            </form>
-        </div>
-
-        <!-- Medical Records Section -->
-        <h2>Medical Records</h2>
-
-        <div class="records-grid">
+        <!-- Records -->
+        <div class="records-container">
 
             {% for block in blocks %}
-                <div class="record-card">
-                    <p><strong>Patient:</strong> {{ block.patient }}</p>
-                    <p><strong>Doctor:</strong> {{ block.doctor }}</p>
-                    <p><strong>Diagnosis:</strong> {{ block.diagnosis }}</p>
-                    <p><strong>Prescription:</strong> {{ block.prescription }}</p>
-                    <p><strong>Timestamp:</strong> {{ block.timestamp }}</p>
-                    <p class="hash">Hash: {{ block.hash }}</p>
-                </div>
+            <div class="record-box">
+                <p><strong>Patient:</strong> {{ block.patient }}</p>
+                <p><strong>Doctor:</strong> {{ block.doctor }}</p>
+                <p><strong>Diagnosis:</strong> {{ block.diagnosis }}</p>
+                <p><strong>Prescription:</strong> {{ block.prescription }}</p>
+                <p class="timestamp">{{ block.timestamp }}</p>
+            </div>
             {% endfor %}
 
         </div>

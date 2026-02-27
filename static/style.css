@@ -304,3 +304,95 @@ button:hover {
     color: gray;
     word-wrap: break-word;
 }
+/* FULL GRADIENT BACKGROUND */
+
+.gradient-bg {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1fa2ff, #12d8fa, #0f9bff);
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 50px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.logout {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* CONTENT */
+
+.content {
+    padding: 40px 60px;
+}
+
+.content h2 {
+    margin-bottom: 30px;
+}
+
+/* FORM */
+
+.record-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.record-form input {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    min-width: 200px;
+}
+
+.record-form button {
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+    color: #0f9bff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.record-form button:hover {
+    background: #e6f7ff;
+}
+
+/* RECORD BOXES */
+
+.records-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.record-box {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.record-box p {
+    margin: 5px 0;
+}
+
+.timestamp {
+    font-size: 12px;
+    opacity: 0.8;
+}
