@@ -1,52 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MediBlock</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>MediBlock Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
-<div class="bg"></div>
+<div class="login-wrapper">
 
-<div class="login-container">
+    <div class="login-card">
 
-    <div class="logo">
-        🏥 <span>MediBlock</span>
-    </div>
-    <p class="subtitle">Secure Healthcare Blockchain</p>
-
-    <form action="/login" method="POST">
-
-        <div class="input-group">
-            <input type="text" name="username" required>
-            <label>Username</label>
+        <div class="brand">
+            <h1>🏥 MediBlock</h1>
+            <p>Secure Healthcare Blockchain</p>
         </div>
 
-        <div class="input-group">
-            <input type="password" name="password" required>
-            <label>Password</label>
-        </div>
+        <h2>Login</h2>
 
-        <div class="input-group">
-            <select name="role" required>
-                <option value="" disabled selected></option>
-                <option value="doctor">Doctor</option>
-                <option value="patient">Patient</option>
-                <option value="insurance">Insurance</option>
-            </select>
-            <label>Select Role</label>
-        </div>
+        {% if error %}
+            <div class="error-box">
+                {{ error }}
+            </div>
+        {% endif %}
 
-        <button class="btn">Login</button>
+        <form method="POST" action="/login">
 
-    </form>
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
 
-    <div class="register">
-        New user? <a href="/register">Create account</a>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-group">
+                <select name="role" required>
+                    <option value="">Select Role</option>
+                    <option>Doctor</option>
+                    <option>Patient</option>
+                    <option>Admin</option>
+                    <option>Insurance</option>
+                </select>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+        </form>
+
+        <p class="register-link">
+            New user? <a href="/register">Create Account</a>
+        </p>
+
     </div>
 
 </div>

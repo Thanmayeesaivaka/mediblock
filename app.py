@@ -33,9 +33,9 @@ def register():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
-    username = request.form["username"]
-    password = request.form["password"]
-    role = request.form["role"]
+    username = request.form["username"].strip()
+    password = request.form["password"].strip()
+    role = request.form["role"].strip()
 
     user = find_user(username, password, role)
 
@@ -43,16 +43,16 @@ def login():
         session["user"] = username
         session["role"] = role
 
-        if role == "admin":
-            return redirect("/admin")
-        elif role == "doctor":
+        if role == "Doctor":
             return redirect("/doctor")
-        elif role == "patient":
+        elif role == "Patient":
             return redirect("/patient")
+        elif role == "Admin":
+            return redirect("/admin")
         else:
             return redirect("/insurance")
 
-    return "Invalid Login Credentials"
+    return render_template("login.html", error="Invalid Login Credentials")
 
 
 # ---------------- ADMIN ----------------
