@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MediBlock - Register</title>
+    <title>MediBlock Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-<div class="container">
-    <div class="card">
-        <h1>🏥 MediBlock Registration</h1>
+
+<div class="auth-container">
+
+    <div class="auth-card">
+        <h1 class="logo">🏥 MediBlock</h1>
+        <h2>Create Account</h2>
 
         <form method="POST">
 
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
-
             <input type="text" name="fullname" placeholder="Full Name" required>
             <input type="number" name="age" placeholder="Age" required>
 
@@ -30,19 +32,21 @@
 
             <select name="role" required>
                 <option value="">Select Role</option>
-                <option value="doctor">Doctor</option>
-                <option value="patient">Patient</option>
-                <option value="insurance">Insurance</option>
+                <option>Doctor</option>
+                <option>Patient</option>
             </select>
 
-            <button type="submit">Register</button>
+            <button type="submit" class="btn-primary">Register</button>
+
         </form>
 
-        <p style="text-align:center;margin-top:10px;">
-            Already registered? <a href="/" style="color:#00d2ff;">Login</a>
+        <p class="switch">
+            Already have an account? 
+            <a href="/">Login</a>
         </p>
-
     </div>
+
 </div>
+
 </body>
 </html>
