@@ -1,84 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Doctor Dashboard</title>
+    <title>Doctor Dashboard - MediBlock</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-<style>
-.record-card{
-    background:#f8fafc;
-    padding:15px;
-    border-radius:12px;
-    margin-top:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-    border-left:6px solid #4facfe;
-}
-.small{
-    color:#475569;
-    font-size:14px;
-}
-.hidden{
-    display:none;
-}
-</style>
-
-<script>
-function showAdd(){
-    document.getElementById("addSection").style.display="block";
-    document.getElementById("recordsSection").style.display="none";
-}
-
-function showRecords(){
-    document.getElementById("addSection").style.display="none";
-    document.getElementById("recordsSection").style.display="block";
-}
-</script>
-
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>MediBlock</h2>
-    <a href="#" onclick="showAdd()">➕ Add Record</a>
-    <a href="#" onclick="showRecords()">📁 Medical Records</a>
-    <a href="/logout">Logout</a>
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🏥 MediBlock</h2>
+        <p>Doctor Panel</p>
+
+        <a href="/doctor">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <h1>Doctor Dashboard</h1>
+
+        <!-- Add Medical Record Form -->
+        <div class="form-card">
+            <h3>Add Medical Record</h3>
+
+            <form method="POST">
+
+                <input type="text" name="patient" placeholder="Patient Username" required>
+                <input type="text" name="diagnosis" placeholder="Diagnosis" required>
+                <input type="text" name="prescription" placeholder="Prescription" required>
+
+                <button type="submit">Add to Blockchain</button>
+
+            </form>
+        </div>
+
+        <!-- Medical Records Section -->
+        <h2>Medical Records</h2>
+
+        <div class="records-grid">
+
+            {% for block in blocks %}
+                <div class="record-card">
+                    <p><strong>Patient:</strong> {{ block.patient }}</p>
+                    <p><strong>Doctor:</strong> {{ block.doctor }}</p>
+                    <p><strong>Diagnosis:</strong> {{ block.diagnosis }}</p>
+                    <p><strong>Prescription:</strong> {{ block.prescription }}</p>
+                    <p><strong>Timestamp:</strong> {{ block.timestamp }}</p>
+                    <p class="hash">Hash: {{ block.hash }}</p>
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="main">
-
-<div class="header">
-    <h2>Doctor Dashboard</h2>
-</div>
-
-<!-- ADD RECORD SECTION -->
-<div id="addSection" class="card">
-<h3>Add Treatment Record</h3>
-
-<form method="POST">
-    <input type="text" name="patient" placeholder="Patient Username" required>
-    <input type="text" name="diagnosis" placeholder="Diagnosis" required>
-    <textarea name="prescription" placeholder="Prescription" required></textarea>
-    <button>Add</button>
-</form>
-</div>
-
-<!-- RECORDS SECTION -->
-<div id="recordsSection" class="card hidden">
-<h3>Patient Medical Records</h3>
-
-{% for b in blocks %}
-<div class="record-card">
-    <h3>Patient: {{b.patient}}</h3>
-    <p class="small"><b>Doctor:</b> {{b.doctor}}</p>
-    <p class="small"><b>Diagnosis:</b> {{b.diagnosis}}</p>
-    <p class="small"><b>Prescription:</b> {{b.prescription}}</p>
-    <p class="small"><b>Date:</b> {{b.timestamp}}</p>
-    <p class="small"><b>Block Hash:</b> {{b.hash[:25]}}...</p>
-</div>
-{% endfor %}
-
-</div>
-
-</div>
 </body>
 </html>

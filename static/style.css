@@ -205,3 +205,102 @@ button:hover {
     border-radius: 8px;
     margin-bottom: 15px;
 }
+
+/* DASHBOARD LAYOUT */
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #203a43, #2c5364);
+    color: white;
+    padding: 30px;
+}
+
+.sidebar h2 {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    display: block;
+    margin: 15px 0;
+    color: white;
+    text-decoration: none;
+}
+
+.logout-btn {
+    margin-top: 30px;
+    color: #ffcccc;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    background: #f4f8fb;
+}
+
+.main-content h1 {
+    margin-bottom: 30px;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+.form-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.form-card button {
+    padding: 12px;
+    width: 100%;
+    background: linear-gradient(135deg, #1fa2ff, #12d8fa);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: linear-gradient(135deg, #0f9bff, #00c3ff);
+}
+
+/* Records Grid */
+.records-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Record Card */
+.record-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.record-card p {
+    margin: 5px 0;
+}
+
+.hash {
+    font-size: 11px;
+    color: gray;
+    word-wrap: break-word;
+}
