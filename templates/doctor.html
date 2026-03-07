@@ -2,109 +2,62 @@
 <html>
 <head>
 <title>MediBlock - Medical Staff Dashboard</title>
-
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 
 <body class="staff-bg">
 
-<!-- HEADER -->
+<!-- TOP HEADER -->
+<div class="main-header">
 
-<div class="top-header">
+<h1 class="logo">🏥 MediBlock</h1>
 
-<h1>🏥 MediBlock</h1>
-
-<a href="/logout" class="logout-btn">Logout</a>
+<div class="logout">
+<a href="/logout">Logout</a>
+</div>
 
 </div>
 
 
-<div class="dashboard">
-
-<h2>Medical Staff Dashboard</h2>
+<h2 class="dashboard-title">Medical Staff Dashboard</h2>
 
 
 <div class="card-container">
 
-<!-- VIEW RECORDS -->
-
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/2966/2966483.png">
-
 <h3>View Patient Records</h3>
-
 <a href="/doctor_records">Open</a>
-
 </div>
 
-
-<!-- UPDATE TREATMENT -->
-
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png">
-
 <h3>Update Treatment</h3>
-
 <a href="/doctor_update">Update</a>
-
 </div>
 
-
-<!-- UPLOAD REPORT -->
-
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
-
 <h3>Upload Medical Report</h3>
-
 <a href="/doctor_upload">Upload</a>
-
 </div>
 
-
-<!-- SHARE DATA -->
-
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/929/929564.png">
-
 <h3>Share Patient Data</h3>
-
 <a href="/doctor_share">Share</a>
-
 </div>
 
-
-<!-- TRACK HISTORY -->
-
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
-
 <h3>Track Treatment History</h3>
-
 <a href="/doctor_history">View</a>
-
 </div>
-
-
-<!-- LOGOUT -->
 
 <div class="feature-card">
-
 <img src="https://cdn-icons-png.flaticon.com/512/1828/1828479.png">
-
 <h3>Logout</h3>
-
 <a href="/logout">Exit</a>
-
-</div>
-
-
 </div>
 
 </div>

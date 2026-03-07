@@ -432,63 +432,74 @@ button:hover {
 .card form input {
     flex: 1;
 }
-/* TWO SHADE BLUE BACKGROUND */
+body{
+margin:0;
+font-family:Segoe UI;
+}
+
+/* FULL PAGE BACKGROUND */
 
 .staff-bg{
 
-background: linear-gradient(
-to bottom,
+min-height:100vh;
+
+background:linear-gradient(
+180deg,
 #2fa4e7,
 #26c6da
 );
 
-min-height:100vh;
-font-family:Segoe UI;
-margin:0;
-
 }
-
 
 /* HEADER */
 
-.top-header{
+.main-header{
 
-display:flex;
-justify-content:space-between;
-align-items:center;
+position:relative;
 
-padding:25px 60px;
+text-align:center;
+
+padding:25px;
 
 color:white;
-font-size:26px;
+
+font-size:30px;
+
 font-weight:bold;
 
 }
 
+/* LOGOUT BUTTON */
 
-.logout-btn{
+.logout{
+
+position:absolute;
+
+right:40px;
+
+top:30px;
+
+}
+
+.logout a{
 
 color:white;
+
 text-decoration:none;
+
 font-size:18px;
 
 }
 
+/* DASHBOARD TITLE */
 
-/* DASHBOARD */
+.dashboard-title{
 
-.dashboard{
-
-width:85%;
-margin:auto;
-margin-top:20px;
-
-}
-
-.dashboard h2{
+text-align:center;
 
 color:#0d47a1;
-margin-bottom:30px;
+
+margin-bottom:40px;
 
 }
 
@@ -497,8 +508,14 @@ margin-bottom:30px;
 
 .card-container{
 
+width:85%;
+
+margin:auto;
+
 display:grid;
+
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
 gap:30px;
 
 }
@@ -518,39 +535,36 @@ text-align:center;
 
 box-shadow:0 10px 25px rgba(0,0,0,0.2);
 
-transition:all 0.3s ease;
+transition:0.3s;
 
 }
-
-
-/* CARD IMAGE */
 
 .feature-card img{
 
 width:80px;
+
 margin-bottom:15px;
 
 }
 
-
-/* CARD TITLE */
-
 .feature-card h3{
 
 color:#1565c0;
+
 margin-bottom:10px;
 
 }
 
-
-/* BUTTON */
-
 .feature-card a{
 
 background:#1e88e5;
+
 color:white;
+
 padding:8px 20px;
+
 border-radius:6px;
+
 text-decoration:none;
 
 }
