@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>MediBlock Doctor Dashboard</title>
+<title>MediBlock - Medical Staff Dashboard</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
-<body class="doctor-bg">
+<body class="staff-bg">
 
-<div class="navbar">
+<!-- HEADER -->
 
-<h2>🏥 MediBlock</h2>
+<div class="top-header">
 
-<a href="/logout">Logout</a>
+<h1>🏥 MediBlock</h1>
+
+<a href="/logout" class="logout-btn">Logout</a>
 
 </div>
 
 
 <div class="dashboard">
 
-<h1>Doctor Dashboard</h1>
+<h2>Medical Staff Dashboard</h2>
+
 
 <div class="card-container">
 
@@ -100,6 +103,7 @@
 <a href="/logout">Exit</a>
 
 </div>
+
 
 </div>
 

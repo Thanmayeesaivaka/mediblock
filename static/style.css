@@ -432,49 +432,45 @@ button:hover {
 .card form input {
     flex: 1;
 }
-body{
-margin:0;
-font-family:Segoe UI;
-}
+/* TWO SHADE BLUE BACKGROUND */
 
-/* SHINY LIGHT BLUE BACKGROUND */
+.staff-bg{
 
-.doctor-bg{
-
-background:linear-gradient(135deg,#cfefff,#9bdcff,#66c7ff);
+background: linear-gradient(
+to bottom,
+#2fa4e7,
+#26c6da
+);
 
 min-height:100vh;
+font-family:Segoe UI;
+margin:0;
 
 }
 
 
-/* NAVBAR */
+/* HEADER */
 
-.navbar{
+.top-header{
 
 display:flex;
-
 justify-content:space-between;
-
 align-items:center;
 
-padding:20px;
-
-background:#1e88e5;
+padding:25px 60px;
 
 color:white;
-
-font-size:20px;
+font-size:26px;
+font-weight:bold;
 
 }
 
-.navbar a{
+
+.logout-btn{
 
 color:white;
-
 text-decoration:none;
-
-font-size:16px;
+font-size:18px;
 
 }
 
@@ -483,19 +479,16 @@ font-size:16px;
 
 .dashboard{
 
-width:90%;
-
+width:85%;
 margin:auto;
-
-margin-top:40px;
+margin-top:20px;
 
 }
 
-.dashboard h1{
-
-margin-bottom:30px;
+.dashboard h2{
 
 color:#0d47a1;
+margin-bottom:30px;
 
 }
 
@@ -505,31 +498,27 @@ color:#0d47a1;
 .card-container{
 
 display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-
-gap:25px;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
 
 }
 
 
-/* FEATURE CARD */
+/* CARDS */
 
 .feature-card{
 
 background:white;
 
-border-radius:12px;
-
 padding:30px;
+
+border-radius:15px;
 
 text-align:center;
 
 box-shadow:0 10px 25px rgba(0,0,0,0.2);
 
 transition:all 0.3s ease;
-
-cursor:pointer;
 
 }
 
@@ -539,7 +528,6 @@ cursor:pointer;
 .feature-card img{
 
 width:80px;
-
 margin-bottom:15px;
 
 }
@@ -549,9 +537,8 @@ margin-bottom:15px;
 
 .feature-card h3{
 
-margin-bottom:15px;
-
 color:#1565c0;
+margin-bottom:10px;
 
 }
 
@@ -560,26 +547,20 @@ color:#1565c0;
 
 .feature-card a{
 
-text-decoration:none;
-
 background:#1e88e5;
-
 color:white;
-
-padding:8px 18px;
-
+padding:8px 20px;
 border-radius:6px;
-
-font-size:14px;
+text-decoration:none;
 
 }
 
 
-/* HOVER ZOOM EFFECT */
+/* HOVER EFFECT */
 
 .feature-card:hover{
 
-transform:scale(1.08);
+transform:scale(1.07);
 
 box-shadow:0 15px 35px rgba(0,0,0,0.3);
 
