@@ -1,127 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Doctor Dashboard - MediBlock</title>
+<title>MediBlock Doctor Dashboard</title>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
 <body class="doctor-bg">
 
-<!-- NAVBAR -->
 <div class="navbar">
 
-<div class="logo">
-🏥 MediBlock
-</div>
+<h2>🏥 MediBlock</h2>
 
-<div>
 <a href="/logout">Logout</a>
-</div>
 
 </div>
 
 
-<div class="dashboard-container">
+<div class="dashboard">
 
 <h1>Doctor Dashboard</h1>
+
+<div class="card-container">
+
+<!-- VIEW RECORDS -->
+
+<div class="feature-card">
+
+<img src="https://cdn-icons-png.flaticon.com/512/2966/2966483.png">
+
+<h3>View Patient Records</h3>
+
+<a href="/doctor_records">Open</a>
+
+</div>
 
 
 <!-- UPDATE TREATMENT -->
 
-<div class="card">
+<div class="feature-card">
+
+<img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png">
 
 <h3>Update Treatment</h3>
 
-<form method="POST" enctype="multipart/form-data">
-
-<input type="text" name="patient" placeholder="Patient Username" required>
-
-<input type="text" name="diagnosis" placeholder="Diagnosis">
-
-<input type="text" name="prescription" placeholder="Prescription">
-
-<button type="submit">Update Treatment</button>
-
-</form>
+<a href="/doctor_update">Update</a>
 
 </div>
-
 
 
 <!-- UPLOAD REPORT -->
 
-<div class="card">
+<div class="feature-card">
+
+<img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
 
 <h3>Upload Medical Report</h3>
 
-<form method="POST" enctype="multipart/form-data">
-
-<input type="text" name="patient" placeholder="Patient Username" required>
-
-<input type="file" name="report">
-
-<button type="submit">Upload Report</button>
-
-</form>
+<a href="/doctor_upload">Upload</a>
 
 </div>
-
 
 
 <!-- SHARE DATA -->
 
-<div class="card">
+<div class="feature-card">
+
+<img src="https://cdn-icons-png.flaticon.com/512/929/929564.png">
 
 <h3>Share Patient Data</h3>
 
-<form method="POST">
-
-<input type="text" name="patient" placeholder="Patient Username">
-
-<input type="text" name="sharewith" placeholder="Doctor / Insurance Username">
-
-<button type="submit">Share Data</button>
-
-</form>
+<a href="/doctor_share">Share</a>
 
 </div>
 
 
+<!-- TRACK HISTORY -->
 
-<!-- PATIENT RECORDS -->
+<div class="feature-card">
 
-<div class="card">
+<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
 
-<h3>Patient Records</h3>
+<h3>Track Treatment History</h3>
 
-<table class="records-table">
-
-<tr>
-<th>Patient</th>
-<th>Doctor</th>
-<th>Diagnosis</th>
-<th>Prescription</th>
-<th>Date</th>
-</tr>
-
-{% for block in blocks %}
-
-<tr>
-
-<td>{{ block.patient }}</td>
-<td>{{ block.doctor }}</td>
-<td>{{ block.diagnosis }}</td>
-<td>{{ block.prescription }}</td>
-<td>{{ block.timestamp }}</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
+<a href="/doctor_history">View</a>
 
 </div>
 
+
+<!-- LOGOUT -->
+
+<div class="feature-card">
+
+<img src="https://cdn-icons-png.flaticon.com/512/1828/1828479.png">
+
+<h3>Logout</h3>
+
+<a href="/logout">Exit</a>
+
+</div>
+
+</div>
 
 </div>
 
