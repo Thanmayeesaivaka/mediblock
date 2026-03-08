@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Update Treatment</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="staff-bg">
+
+<div class="topbar">
+<div class="logo">🏥 MediBlock</div>
+<div class="logout">
+<a href="/staff_home">Back</a>
+</div>
+</div>
+
+<h2 class="dashboard-title">Update Treatment Details</h2>
+
+<form method="POST" style="width:40%;margin:auto;background:white;padding:30px;border-radius:10px">
+
+Patient ID<br>
+<input type="text" name="pid"><br><br>
+
+Treatment Details<br>
+<textarea name="treatment"></textarea><br><br>
+
+<input type="submit" value="Update">
+
+</form>
+
+</body>
+</html>

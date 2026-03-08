@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, redirect, session
 from database import add_user, find_user, load_blocks
 from blockchain import create_block, verify_chain
+import os
 
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
+
+UPLOAD_FOLDER = "static/reports"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -14,7 +18,9 @@ def home():
 # ---------------- REGISTER ----------------
 @app.route("/register", methods=["GET","POST"])
 def register():
+
     if request.method == "POST":
+
         user = {
             "username": request.form["username"],
             "password": request.form["password"],
@@ -25,14 +31,17 @@ def register():
             "address": request.form["address"],
             "role": request.form["role"]
         }
+
         add_user(user)
         return redirect("/")
+
     return render_template("register.html")
 
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
+
     username = request.form["username"].strip()
     password = request.form["password"].strip()
     role = request.form["role"].strip()
@@ -40,15 +49,19 @@ def login():
     user = find_user(username, password, role)
 
     if user:
+
         session["user"] = username
         session["role"] = role
 
         if role == "Doctor":
             return redirect("/doctor")
+
         elif role == "Patient":
             return redirect("/patient")
+
         elif role == "Admin":
             return redirect("/admin")
+
         else:
             return redirect("/insurance")
 
@@ -61,7 +74,7 @@ def admin():
     return render_template("admin.html", user=session.get("user"))
 
 
-# ---------------- DOCTOR ----------------
+# ---------------- DOCTOR DASHBOARD ----------------
 @app.route("/doctor", methods=["GET","POST"])
 def doctor():
 
@@ -69,6 +82,7 @@ def doctor():
         return redirect("/")
 
     if request.method == "POST":
+
         patient = request.form["patient"]
         diagnosis = request.form["diagnosis"]
         prescription = request.form["prescription"]
@@ -76,7 +90,95 @@ def doctor():
         create_block(patient, session["user"], diagnosis, prescription)
 
     blocks = load_blocks()
+
     return render_template("doctor.html", blocks=blocks)
+
+
+# =====================================================
+# MEDICAL STAFF MODULE FUNCTIONS
+# =====================================================
+
+# -------- VIEW PATIENT RECORDS --------
+@app.route("/view_records")
+def view_records():
+
+    if "user" not in session:
+        return redirect("/")
+
+    blocks = load_blocks()
+
+    return render_template("view_records.html", blocks=blocks)
+
+
+# -------- UPDATE TREATMENT DETAILS --------
+@app.route("/update_treatment", methods=["GET","POST"])
+def update_treatment():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        patient = request.form["patient"]
+        diagnosis = request.form["diagnosis"]
+        prescription = request.form["prescription"]
+
+        create_block(patient, session["user"], diagnosis, prescription)
+
+        return redirect("/view_records")
+
+    return render_template("update_treatment.html")
+
+
+# -------- UPLOAD MEDICAL REPORT --------
+@app.route("/upload_report", methods=["GET","POST"])
+def upload_report():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        patient = request.form["patient"]
+        file = request.files["report"]
+
+        if file:
+            path = os.path.join(UPLOAD_FOLDER, file.filename)
+            file.save(path)
+
+    return render_template("upload_report.html")
+
+
+# -------- SHARE PATIENT DATA --------
+@app.route("/share_data", methods=["GET","POST"])
+def share_data():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        patient = request.form["patient"]
+        receiver = request.form["receiver"]
+
+        blocks = load_blocks()
+
+        # In real blockchain system this would share securely
+        return render_template("share_data.html", message="Data Shared Successfully")
+
+    return render_template("share_data.html")
+
+
+# -------- TREATMENT HISTORY --------
+@app.route("/treatment_history")
+def treatment_history():
+
+    if "user" not in session:
+        return redirect("/")
+
+    blocks = load_blocks()
+
+    return render_template("treatment_history.html", blocks=blocks)
 
 
 # ---------------- PATIENT ----------------
@@ -108,10 +210,12 @@ def insurance():
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect("/")
 
 
+# ---------------- RUN APP ----------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-

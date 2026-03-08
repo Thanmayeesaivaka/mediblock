@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>View Patient Records</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="staff-bg">
+
+<div class="topbar">
+<div class="logo">🏥 MediBlock</div>
+<div class="logout">
+<a href="/staff_home">Back</a>
+</div>
+</div>
+
+<h2 class="dashboard-title">Patient Records</h2>
+
+<table border="1" style="width:80%;margin:auto;background:white;text-align:center">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Age</th>
+<th>Disease</th>
+<th>Doctor</th>
+</tr>
+
+{% for row in patients %}
+<tr>
+<td>{{row[0]}}</td>
+<td>{{row[1]}}</td>
+<td>{{row[2]}}</td>
+<td>{{row[3]}}</td>
+<td>{{row[4]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
