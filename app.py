@@ -13,7 +13,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ---------------- MongoDB Atlas Connection ----------------
 # Replace with your actual connection string
 
-client = MongoClient("mongodb+srv://mediblock:<db_password>@cluster0.mvjq5vy.mongodb.net/?appName=Cluster0")
+client = MongoClient("mongodb+srv://mediblock:<Mediblock>@cluster0.mvjq5vy.mongodb.net/?appName=Cluster0")
 
 db = client["mediblock"]
 
