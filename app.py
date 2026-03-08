@@ -11,9 +11,12 @@ UPLOAD_FOLDER = "static/reports"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ---------------- MongoDB Atlas Connection ----------------
+# Replace with your actual connection string
 
-client = MongoClient("YOUR_MONGODB_ATLAS_CONNECTION_STRING")
+client = MongoClient("mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority")
+
 db = client["mediblock"]
+
 patients_collection = db["patients"]
 
 
@@ -104,7 +107,7 @@ def doctor():
 
 
 # =====================================================
-# MEDICAL STAFF MODULE FUNCTIONS
+# MEDICAL STAFF MODULE
 # =====================================================
 
 # -------- VIEW PATIENT RECORDS --------
@@ -119,7 +122,7 @@ def view_records():
     return render_template("view_records.html", patients=patients)
 
 
-# -------- UPDATE TREATMENT DETAILS --------
+# -------- UPDATE TREATMENT --------
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
 
@@ -139,7 +142,7 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# -------- UPLOAD MEDICAL REPORT --------
+# -------- UPLOAD REPORT --------
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
@@ -157,7 +160,7 @@ def upload_report():
     return render_template("upload_report.html")
 
 
-# -------- SHARE PATIENT DATA --------
+# -------- SHARE DATA --------
 @app.route("/share_data", methods=["GET","POST"])
 def share_data():
 
@@ -223,4 +226,4 @@ def logout():
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(debug=True)
