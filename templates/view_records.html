@@ -1,38 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>View Patient Records</title>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+table{
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1976d2;
+color:white;
+}
+
+</style>
+
 </head>
 
 <body class="staff-bg">
 
 <div class="topbar">
-<div class="logo">🏥 MediBlock</div>
+
+<div class="logo">
+🏥 MediBlock
+</div>
+
 <div class="logout">
-<a href="/staff_home">Back</a>
+<a href="/doctor">Back</a>
 </div>
+
 </div>
+
 
 <h2 class="dashboard-title">Patient Records</h2>
 
-<table border="1" style="width:80%;margin:auto;background:white;text-align:center">
+
+<table>
+
 <tr>
-<th>ID</th>
+<th>Patient ID</th>
 <th>Name</th>
 <th>Age</th>
-<th>Disease</th>
-<th>Doctor</th>
+<th>Gender</th>
+<th>Phone</th>
+<th>Address</th>
+<th>Date</th>
 </tr>
 
 {% for row in patients %}
+
 <tr>
-<td>{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2]}}</td>
-<td>{{row[3]}}</td>
-<td>{{row[4]}}</td>
+
+<td>{{ row.patient_id }}</td>
+<td>{{ row.name }}</td>
+<td>{{ row.age }}</td>
+<td>{{ row.gender }}</td>
+<td>{{ row.phone }}</td>
+<td>{{ row.address }}</td>
+<td>{{ row.created_at }}</td>
+
 </tr>
+
 {% endfor %}
 
 </table>

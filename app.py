@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 from database import add_user, find_user, load_blocks
 from blockchain import create_block, verify_chain
+from pymongo import MongoClient
 import os
 
 app = Flask(__name__)
@@ -8,6 +9,13 @@ app.secret_key = "mediblock_secret"
 
 UPLOAD_FOLDER = "static/reports"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ---------------- MongoDB Atlas Connection ----------------
+
+client = MongoClient("YOUR_MONGODB_ATLAS_CONNECTION_STRING")
+db = client["mediblock"]
+patients_collection = db["patients"]
+
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -33,6 +41,7 @@ def register():
         }
 
         add_user(user)
+
         return redirect("/")
 
     return render_template("register.html")
@@ -105,9 +114,9 @@ def view_records():
     if "user" not in session:
         return redirect("/")
 
-    blocks = load_blocks()
+    patients = list(patients_collection.find())
 
-    return render_template("view_records.html", blocks=blocks)
+    return render_template("view_records.html", patients=patients)
 
 
 # -------- UPDATE TREATMENT DETAILS --------
@@ -139,7 +148,6 @@ def upload_report():
 
     if request.method == "POST":
 
-        patient = request.form["patient"]
         file = request.files["report"]
 
         if file:
@@ -161,9 +169,6 @@ def share_data():
         patient = request.form["patient"]
         receiver = request.form["receiver"]
 
-        blocks = load_blocks()
-
-        # In real blockchain system this would share securely
         return render_template("share_data.html", message="Data Shared Successfully")
 
     return render_template("share_data.html")
