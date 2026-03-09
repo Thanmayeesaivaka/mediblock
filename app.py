@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session
 from pymongo import MongoClient
 from cryptography.fernet import Fernet
 import hashlib
+import base64
 import os
 
 from database import add_user, find_user, load_blocks
@@ -12,11 +13,10 @@ app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 
-# ---------------- MongoDB Atlas Connection ----------------
+# ---------------- MongoDB Atlas ----------------
 
 client = MongoClient(
-"mongodb+srv://mediblock:YOUR_NEW_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority",
-serverSelectionTimeoutMS=5000
+"mongodb+srv://mediblock:YOUR_NEW_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
 )
 
 db = client["mediblock"]
@@ -25,21 +25,19 @@ patients_collection = db["patients"]
 reports_collection = db["reports"]
 
 
-# ---------------- Encryption Setup ----------------
+# =====================================================
+# HOME
+# =====================================================
 
-# Fixed encryption key (do NOT regenerate each time)
-encryption_key = b'7V7K8qC8x1h9c7V9QFqKqkY3mQqPq7vJ0yPpVnQvQqQ='
-
-cipher = Fernet(encryption_key)
-
-
-# ---------------- HOME ----------------
 @app.route("/")
 def home():
     return render_template("login.html")
 
 
-# ---------------- REGISTER ----------------
+# =====================================================
+# REGISTER
+# =====================================================
+
 @app.route("/register", methods=["GET","POST"])
 def register():
 
@@ -63,7 +61,10 @@ def register():
     return render_template("register.html")
 
 
-# ---------------- LOGIN ----------------
+# =====================================================
+# LOGIN
+# =====================================================
+
 @app.route("/login", methods=["POST"])
 def login():
 
@@ -93,13 +94,19 @@ def login():
     return render_template("login.html", error="Invalid Login Credentials")
 
 
-# ---------------- ADMIN ----------------
+# =====================================================
+# ADMIN
+# =====================================================
+
 @app.route("/admin")
 def admin():
     return render_template("admin.html", user=session.get("user"))
 
 
-# ---------------- DOCTOR DASHBOARD ----------------
+# =====================================================
+# DOCTOR DASHBOARD
+# =====================================================
+
 @app.route("/doctor", methods=["GET","POST"])
 def doctor():
 
@@ -120,11 +127,9 @@ def doctor():
 
 
 # =====================================================
-# MEDICAL STAFF MODULE
+# VIEW PATIENT RECORDS
 # =====================================================
 
-
-# -------- VIEW PATIENT RECORDS --------
 @app.route("/view_records")
 def view_records():
 
@@ -136,7 +141,10 @@ def view_records():
     return render_template("view_records.html", patients=patients)
 
 
-# -------- UPDATE TREATMENT --------
+# =====================================================
+# UPDATE TREATMENT
+# =====================================================
+
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
 
@@ -156,7 +164,10 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# -------- UPLOAD REPORT (Encrypted) --------
+# =====================================================
+# UPLOAD REPORT (AES ENCRYPTION + SHA256 HASH)
+# =====================================================
+
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
@@ -172,53 +183,45 @@ def upload_report():
 
             file_data = file.read()
 
-            # SHA256 HASH KEY
+            # -------- SHA256 HASH --------
             hash_key = hashlib.sha256(file_data).hexdigest()
 
-            # AES ENCRYPTION
+            # -------- GENERATE UNIQUE AES KEY --------
+            aes_key = Fernet.generate_key()
+
+            cipher = Fernet(aes_key)
+
             encrypted_data = cipher.encrypt(file_data)
 
-            report_document = {
+            report_doc = {
 
                 "patient_id": patient_id,
                 "report_name": file.filename,
-                "encrypted_report": encrypted_data,
+
+                "encrypted_report": base64.b64encode(encrypted_data).decode(),
+
                 "hash_key": hash_key,
+
+                "encryption_key": aes_key.decode(),
+
                 "uploaded_by": session["user"]
 
             }
 
-            reports_collection.insert_one(report_document)
+            reports_collection.insert_one(report_doc)
 
             return render_template(
                 "upload_report.html",
-                message="Report Encrypted and Stored Successfully"
+                message="Report Encrypted & Stored Successfully"
             )
 
     return render_template("upload_report.html")
 
 
-# -------- SHARE DATA --------
-@app.route("/share_data", methods=["GET","POST"])
-def share_data():
+# =====================================================
+# VIEW REPORTS (PATIENT)
+# =====================================================
 
-    if "user" not in session:
-        return redirect("/")
-
-    if request.method == "POST":
-
-        patient = request.form["patient"]
-        receiver = request.form["receiver"]
-
-        return render_template(
-            "share_data.html",
-            message="Data Shared Successfully"
-        )
-
-    return render_template("share_data.html")
-
-
-# -------- VIEW REPORTS (PATIENT SIDE) --------
 @app.route("/view_reports/<patient_id>")
 def view_reports(patient_id):
 
@@ -228,17 +231,49 @@ def view_reports(patient_id):
 
     for report in reports:
 
-        decrypted_data = cipher.decrypt(report["encrypted_report"])
+        key = report["encryption_key"].encode()
+
+        cipher = Fernet(key)
+
+        encrypted_data = base64.b64decode(report["encrypted_report"])
+
+        decrypted_data = cipher.decrypt(encrypted_data)
 
         decrypted_reports.append({
+
             "name": report["report_name"],
-            "hash": report["hash_key"]
+
+            "hash": report["hash_key"],
+
+            "key": report["encryption_key"]
+
         })
 
     return render_template("view_reports.html", reports=decrypted_reports)
 
 
-# -------- TREATMENT HISTORY --------
+# =====================================================
+# SHARE DATA
+# =====================================================
+
+@app.route("/share_data", methods=["GET","POST"])
+def share_data():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        return render_template("share_data.html",
+                               message="Data Shared Successfully")
+
+    return render_template("share_data.html")
+
+
+# =====================================================
+# TREATMENT HISTORY
+# =====================================================
+
 @app.route("/treatment_history")
 def treatment_history():
 
@@ -250,7 +285,10 @@ def treatment_history():
     return render_template("treatment_history.html", blocks=blocks)
 
 
-# ---------------- PATIENT ----------------
+# =====================================================
+# PATIENT
+# =====================================================
+
 @app.route("/patient")
 def patient():
 
@@ -258,12 +296,16 @@ def patient():
         return redirect("/")
 
     blocks = load_blocks()
+
     valid = verify_chain()
 
     return render_template("patient.html", blocks=blocks, valid=valid)
 
 
-# ---------------- INSURANCE ----------------
+# =====================================================
+# INSURANCE
+# =====================================================
+
 @app.route("/insurance")
 def insurance():
 
@@ -271,12 +313,16 @@ def insurance():
         return redirect("/")
 
     blocks = load_blocks()
+
     valid = verify_chain()
 
     return render_template("insurance.html", blocks=blocks, valid=valid)
 
 
-# ---------------- LOGOUT ----------------
+# =====================================================
+# LOGOUT
+# =====================================================
+
 @app.route("/logout")
 def logout():
 
@@ -285,12 +331,9 @@ def logout():
     return redirect("/")
 
 
-# ---------------- HEALTH CHECK (for Render uptime) ----------------
-@app.route("/health")
-def health():
-    return "OK"
+# =====================================================
+# RUN APP
+# =====================================================
 
-
-# ---------------- RUN APP ----------------
 if __name__ == "__main__":
     app.run()
