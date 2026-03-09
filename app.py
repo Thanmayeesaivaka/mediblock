@@ -13,7 +13,7 @@ app.secret_key = "mediblock_secret"
 # ---------------- MongoDB Atlas Connection ----------------
 
 client = MongoClient(
-"mongodb+srv://mediblock:YOUR_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
+"mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
 )
 
 db = client["mediblock"]
