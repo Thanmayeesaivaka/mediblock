@@ -1,23 +1,36 @@
 from flask import Flask, render_template, request, redirect, session
+from pymongo import MongoClient
+from cryptography.fernet import Fernet
+import hashlib
+import os
+
 from database import add_user, find_user, load_blocks
 from blockchain import create_block, verify_chain
-from pymongo import MongoClient
-import os
+
 
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
-UPLOAD_FOLDER = "static/reports"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ---------------- MongoDB Atlas Connection ----------------
-# Replace with your actual connection string
 
-client = MongoClient("mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/?appName=Cluster0")
+client = MongoClient(
+"mongodb+srv://mediblock:YOUR_NEW_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority",
+serverSelectionTimeoutMS=5000
+)
 
 db = client["mediblock"]
 
 patients_collection = db["patients"]
+reports_collection = db["reports"]
+
+
+# ---------------- Encryption Setup ----------------
+
+# Fixed encryption key (do NOT regenerate each time)
+encryption_key = b'7V7K8qC8x1h9c7V9QFqKqkY3mQqPq7vJ0yPpVnQvQqQ='
+
+cipher = Fernet(encryption_key)
 
 
 # ---------------- HOME ----------------
@@ -110,6 +123,7 @@ def doctor():
 # MEDICAL STAFF MODULE
 # =====================================================
 
+
 # -------- VIEW PATIENT RECORDS --------
 @app.route("/view_records")
 def view_records():
@@ -142,7 +156,7 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# -------- UPLOAD REPORT --------
+# -------- UPLOAD REPORT (Encrypted) --------
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
@@ -151,11 +165,35 @@ def upload_report():
 
     if request.method == "POST":
 
+        patient_id = request.form["pid"]
         file = request.files["report"]
 
         if file:
-            path = os.path.join(UPLOAD_FOLDER, file.filename)
-            file.save(path)
+
+            file_data = file.read()
+
+            # SHA256 HASH KEY
+            hash_key = hashlib.sha256(file_data).hexdigest()
+
+            # AES ENCRYPTION
+            encrypted_data = cipher.encrypt(file_data)
+
+            report_document = {
+
+                "patient_id": patient_id,
+                "report_name": file.filename,
+                "encrypted_report": encrypted_data,
+                "hash_key": hash_key,
+                "uploaded_by": session["user"]
+
+            }
+
+            reports_collection.insert_one(report_document)
+
+            return render_template(
+                "upload_report.html",
+                message="Report Encrypted and Stored Successfully"
+            )
 
     return render_template("upload_report.html")
 
@@ -172,9 +210,32 @@ def share_data():
         patient = request.form["patient"]
         receiver = request.form["receiver"]
 
-        return render_template("share_data.html", message="Data Shared Successfully")
+        return render_template(
+            "share_data.html",
+            message="Data Shared Successfully"
+        )
 
     return render_template("share_data.html")
+
+
+# -------- VIEW REPORTS (PATIENT SIDE) --------
+@app.route("/view_reports/<patient_id>")
+def view_reports(patient_id):
+
+    reports = reports_collection.find({"patient_id": patient_id})
+
+    decrypted_reports = []
+
+    for report in reports:
+
+        decrypted_data = cipher.decrypt(report["encrypted_report"])
+
+        decrypted_reports.append({
+            "name": report["report_name"],
+            "hash": report["hash_key"]
+        })
+
+    return render_template("view_reports.html", reports=decrypted_reports)
 
 
 # -------- TREATMENT HISTORY --------
@@ -224,6 +285,12 @@ def logout():
     return redirect("/")
 
 
+# ---------------- HEALTH CHECK (for Render uptime) ----------------
+@app.route("/health")
+def health():
+    return "OK"
+
+
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
