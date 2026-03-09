@@ -10,10 +10,10 @@ from blockchain import create_block, verify_chain
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
-# ---------------- MongoDB Atlas ----------------
+# ---------------- MongoDB Atlas Connection ----------------
 
 client = MongoClient(
-"mongodb+srv://mediblock:YOUR_NEW_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
+"mongodb+srv://mediblock:YOUR_PASSWORD@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
 )
 
 db = client["mediblock"]
@@ -21,9 +21,9 @@ db = client["mediblock"]
 patients_collection = db["patients"]
 reports_collection = db["reports"]
 
-# ---------------- Encryption Key ----------------
-# Generate once using Fernet.generate_key()
+# ---------------- Encryption Setup ----------------
 
+# Generate once using Fernet.generate_key()
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
 
@@ -52,7 +52,6 @@ def register():
         }
 
         add_user(user)
-
         return redirect("/")
 
     return render_template("register.html")
@@ -118,6 +117,9 @@ def doctor():
 @app.route("/view_records")
 def view_records():
 
+    if "user" not in session:
+        return redirect("/")
+
     patients = list(patients_collection.find())
 
     return render_template("view_records.html", patients=patients)
@@ -126,6 +128,9 @@ def view_records():
 # ---------------- UPDATE TREATMENT ----------------
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
+
+    if "user" not in session:
+        return redirect("/")
 
     if request.method == "POST":
 
@@ -147,12 +152,14 @@ def update_treatment():
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
+    if "user" not in session:
+        return redirect("/")
+
     if request.method == "POST":
 
         try:
 
             patient_id = request.form["pid"]
-
             file = request.files["report"]
 
             file_data = file.read()
@@ -160,7 +167,7 @@ def upload_report():
             # SHA256 HASH
             hash_key = hashlib.sha256(file_data).hexdigest()
 
-            # AES ENCRYPTION
+            # AES Encryption
             encrypted_data = cipher.encrypt(file_data)
 
             report_document = {
@@ -169,7 +176,7 @@ def upload_report():
                 "report_name": file.filename,
                 "encrypted_report": base64.b64encode(encrypted_data).decode(),
                 "hash_key": hash_key,
-                "uploaded_by": session.get("user","doctor")
+                "uploaded_by": session["user"]
 
             }
 
@@ -177,11 +184,10 @@ def upload_report():
 
             return render_template(
                 "upload_report.html",
-                message="Report Encrypted & Stored Successfully"
+                message="Report Encrypted and Stored Successfully"
             )
 
         except Exception as e:
-
             return f"Error: {str(e)}"
 
     return render_template("upload_report.html")
@@ -198,14 +204,11 @@ def view_reports(patient_id):
     for report in reports:
 
         encrypted_data = base64.b64decode(report["encrypted_report"])
-
         decrypted_data = cipher.decrypt(encrypted_data)
 
         report_list.append({
-
             "name": report["report_name"],
             "hash": report["hash_key"]
-
         })
 
     return render_template("view_reports.html", reports=report_list)
@@ -216,7 +219,6 @@ def view_reports(patient_id):
 def patient():
 
     blocks = load_blocks()
-
     valid = verify_chain()
 
     return render_template("patient.html", blocks=blocks, valid=valid)
@@ -227,7 +229,6 @@ def patient():
 def insurance():
 
     blocks = load_blocks()
-
     valid = verify_chain()
 
     return render_template("insurance.html", blocks=blocks, valid=valid)
@@ -238,7 +239,6 @@ def insurance():
 def logout():
 
     session.clear()
-
     return redirect("/")
 
 
