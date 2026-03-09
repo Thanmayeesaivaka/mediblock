@@ -3,15 +3,12 @@ from pymongo import MongoClient
 from cryptography.fernet import Fernet
 import hashlib
 import base64
-import os
 
 from database import add_user, find_user, load_blocks
 from blockchain import create_block, verify_chain
 
-
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
-
 
 # ---------------- MongoDB Atlas ----------------
 
@@ -24,20 +21,20 @@ db = client["mediblock"]
 patients_collection = db["patients"]
 reports_collection = db["reports"]
 
+# ---------------- Encryption Key ----------------
+# Generate once using Fernet.generate_key()
 
-# =====================================================
-# HOME
-# =====================================================
+encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
+cipher = Fernet(encryption_key)
 
+
+# ---------------- HOME ----------------
 @app.route("/")
 def home():
     return render_template("login.html")
 
 
-# =====================================================
-# REGISTER
-# =====================================================
-
+# ---------------- REGISTER ----------------
 @app.route("/register", methods=["GET","POST"])
 def register():
 
@@ -61,16 +58,13 @@ def register():
     return render_template("register.html")
 
 
-# =====================================================
-# LOGIN
-# =====================================================
-
+# ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
 
-    username = request.form["username"].strip()
-    password = request.form["password"].strip()
-    role = request.form["role"].strip()
+    username = request.form["username"]
+    password = request.form["password"]
+    role = request.form["role"]
 
     user = find_user(username, password, role)
 
@@ -94,19 +88,13 @@ def login():
     return render_template("login.html", error="Invalid Login Credentials")
 
 
-# =====================================================
-# ADMIN
-# =====================================================
-
+# ---------------- ADMIN ----------------
 @app.route("/admin")
 def admin():
-    return render_template("admin.html", user=session.get("user"))
+    return render_template("admin.html")
 
 
-# =====================================================
-# DOCTOR DASHBOARD
-# =====================================================
-
+# ---------------- DOCTOR DASHBOARD ----------------
 @app.route("/doctor", methods=["GET","POST"])
 def doctor():
 
@@ -126,30 +114,18 @@ def doctor():
     return render_template("doctor.html", blocks=blocks)
 
 
-# =====================================================
-# VIEW PATIENT RECORDS
-# =====================================================
-
+# ---------------- VIEW PATIENT RECORDS ----------------
 @app.route("/view_records")
 def view_records():
-
-    if "user" not in session:
-        return redirect("/")
 
     patients = list(patients_collection.find())
 
     return render_template("view_records.html", patients=patients)
 
 
-# =====================================================
-# UPDATE TREATMENT
-# =====================================================
-
+# ---------------- UPDATE TREATMENT ----------------
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
-
-    if "user" not in session:
-        return redirect("/")
 
     if request.method == "POST":
 
@@ -165,135 +141,79 @@ def update_treatment():
 
 
 # =====================================================
-# UPLOAD REPORT (AES ENCRYPTION + SHA256 HASH)
+# UPLOAD REPORT (AES + SHA256)
 # =====================================================
 
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
-    if "user" not in session:
-        return redirect("/")
-
     if request.method == "POST":
 
-        patient_id = request.form["pid"]
-        file = request.files["report"]
+        try:
 
-        if file:
+            patient_id = request.form["pid"]
+
+            file = request.files["report"]
 
             file_data = file.read()
 
-            # -------- SHA256 HASH --------
+            # SHA256 HASH
             hash_key = hashlib.sha256(file_data).hexdigest()
 
-            # -------- GENERATE UNIQUE AES KEY --------
-            aes_key = Fernet.generate_key()
-
-            cipher = Fernet(aes_key)
-
+            # AES ENCRYPTION
             encrypted_data = cipher.encrypt(file_data)
 
-            report_doc = {
+            report_document = {
 
                 "patient_id": patient_id,
                 "report_name": file.filename,
-
                 "encrypted_report": base64.b64encode(encrypted_data).decode(),
-
                 "hash_key": hash_key,
-
-                "encryption_key": aes_key.decode(),
-
-                "uploaded_by": session["user"]
+                "uploaded_by": session.get("user","doctor")
 
             }
 
-            reports_collection.insert_one(report_doc)
+            reports_collection.insert_one(report_document)
 
             return render_template(
                 "upload_report.html",
                 message="Report Encrypted & Stored Successfully"
             )
 
+        except Exception as e:
+
+            return f"Error: {str(e)}"
+
     return render_template("upload_report.html")
 
 
-# =====================================================
-# VIEW REPORTS (PATIENT)
-# =====================================================
-
+# ---------------- VIEW REPORTS ----------------
 @app.route("/view_reports/<patient_id>")
 def view_reports(patient_id):
 
     reports = reports_collection.find({"patient_id": patient_id})
 
-    decrypted_reports = []
+    report_list = []
 
     for report in reports:
-
-        key = report["encryption_key"].encode()
-
-        cipher = Fernet(key)
 
         encrypted_data = base64.b64decode(report["encrypted_report"])
 
         decrypted_data = cipher.decrypt(encrypted_data)
 
-        decrypted_reports.append({
+        report_list.append({
 
             "name": report["report_name"],
-
-            "hash": report["hash_key"],
-
-            "key": report["encryption_key"]
+            "hash": report["hash_key"]
 
         })
 
-    return render_template("view_reports.html", reports=decrypted_reports)
+    return render_template("view_reports.html", reports=report_list)
 
 
-# =====================================================
-# SHARE DATA
-# =====================================================
-
-@app.route("/share_data", methods=["GET","POST"])
-def share_data():
-
-    if "user" not in session:
-        return redirect("/")
-
-    if request.method == "POST":
-
-        return render_template("share_data.html",
-                               message="Data Shared Successfully")
-
-    return render_template("share_data.html")
-
-
-# =====================================================
-# TREATMENT HISTORY
-# =====================================================
-
-@app.route("/treatment_history")
-def treatment_history():
-
-    if "user" not in session:
-        return redirect("/")
-
-    blocks = load_blocks()
-
-    return render_template("treatment_history.html", blocks=blocks)
-
-
-# =====================================================
-# PATIENT
-# =====================================================
-
+# ---------------- PATIENT ----------------
 @app.route("/patient")
 def patient():
-
-    if "user" not in session:
-        return redirect("/")
 
     blocks = load_blocks()
 
@@ -302,15 +222,9 @@ def patient():
     return render_template("patient.html", blocks=blocks, valid=valid)
 
 
-# =====================================================
-# INSURANCE
-# =====================================================
-
+# ---------------- INSURANCE ----------------
 @app.route("/insurance")
 def insurance():
-
-    if "user" not in session:
-        return redirect("/")
 
     blocks = load_blocks()
 
@@ -319,10 +233,7 @@ def insurance():
     return render_template("insurance.html", blocks=blocks, valid=valid)
 
 
-# =====================================================
-# LOGOUT
-# =====================================================
-
+# ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
 
@@ -331,9 +242,6 @@ def logout():
     return redirect("/")
 
 
-# =====================================================
-# RUN APP
-# =====================================================
-
+# ---------------- RUN APP ----------------
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
