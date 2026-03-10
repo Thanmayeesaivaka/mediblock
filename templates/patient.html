@@ -1,105 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Patient Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>MediBlock - Patient Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='patient_style.css') }}">
 </head>
-<body class="bg-blue">
 
-<!-- Navbar -->
-<div class="navbar">
-    <h2>🏥 MediBlock</h2>
-    <a href="/logout">Logout</a>
+<body class="patient-bg">
+
+<!-- TOP NAVBAR -->
+<div class="topbar">
+
+<div class="logo">
+💜 MediBlock
 </div>
 
-<div class="dashboard">
+<div class="logout">
+<a href="/logout">Logout</a>
+</div>
 
-    <h1>Patient Dashboard</h1>
+</div>
 
-    <!-- Blockchain Status -->
-    <div class="card">
-        <h3>Blockchain Status</h3>
+<h2 class="dashboard-title">Patient Dashboard</h2>
 
-        {% if valid %}
-            <p style="color:green;">✔ Medical Records Verified</p>
-        {% else %}
-            <p style="color:red;">⚠ Blockchain Integrity Failed</p>
-        {% endif %}
 
-    </div>
+<div class="card-container">
 
-    <!-- Medical History -->
-    <div class="card">
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
+<h3>View Medical History</h3>
+<a href="/medical_history">View</a>
+</div>
 
-        <h3>Your Medical History</h3>
 
-        <table class="history-table">
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png">
+<h3>Grant Access</h3>
+<a href="/grant_access">Grant</a>
+</div>
 
-            <tr>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Diagnosis</th>
-                <th>Prescription</th>
-                <th>Date</th>
-            </tr>
 
-            {% for block in blocks %}
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png">
+<h3>Track Treatments</h3>
+<a href="/track_treatment">Track</a>
+</div>
 
-            {% if block.patient == session['user'] %}
 
-            <tr>
-                <td>{{ block.patient }}</td>
-                <td>{{ block.doctor }}</td>
-                <td>{{ block.diagnosis }}</td>
-                <td>{{ block.prescription }}</td>
-                <td>{{ block.timestamp }}</td>
-            </tr>
-
-            {% endif %}
-
-            {% endfor %}
-
-        </table>
-
-    </div>
-
-    <!-- Grant Access -->
-    <div class="card">
-
-        <h3>Grant Access to Doctor / Insurance</h3>
-
-        <form>
-
-            <input type="text" placeholder="Enter Doctor Username">
-
-            <button type="submit">Grant Access</button>
-
-        </form>
-
-    </div>
-
-    <!-- Treatment Tracking -->
-    <div class="card">
-
-        <h3>Track Treatments</h3>
-
-        {% for block in blocks %}
-
-        {% if block.patient == session['user'] %}
-
-        <div class="record">
-
-            <p><strong>Diagnosis:</strong> {{ block.diagnosis }}</p>
-            <p><strong>Prescription:</strong> {{ block.prescription }}</p>
-            <p><strong>Doctor:</strong> {{ block.doctor }}</p>
-
-        </div>
-
-        {% endif %}
-
-        {% endfor %}
-
-    </div>
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/1828/1828479.png">
+<h3>Logout</h3>
+<a href="/logout">Exit</a>
+</div>
 
 </div>
 
