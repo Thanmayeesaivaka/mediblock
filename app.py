@@ -267,26 +267,6 @@ def share_data():
 
     return render_template("share_data.html")
 
-@app.route("/doctor_schedule")
-def doctor_schedule():
-
-    if "user" not in session:
-        return redirect("/")
-
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    appointments = list(
-        appointments_collection.find(
-            {"doctor": session["user"], "date": today}
-        )
-    )
-
-    return render_template(
-        "doctor_schedule.html",
-        appointments=appointments,
-        today=today
-    )
-
 @app.route("/create_appointment", methods=["GET","POST"])
 def create_appointment():
 
@@ -308,6 +288,28 @@ def create_appointment():
         return redirect("/doctor_schedule")
 
     return render_template("create_appointment.html")
+
+@app.route("/doctor_schedule")
+def doctor_schedule():
+
+    if "user" not in session:
+        return redirect("/")
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    appointments = list(
+        appointments_collection.find(
+            {"doctor": session["user"], "date": today}
+        )
+    )
+
+    return render_template(
+        "doctor_schedule.html",
+        appointments=appointments,
+        today=today
+    )
+
+
 
 
 # ---------------- PATIENT ----------------
