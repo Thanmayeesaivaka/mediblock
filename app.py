@@ -11,7 +11,6 @@ from blockchain import create_block, verify_chain
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
-
 # ---------------- MongoDB Atlas ----------------
 
 client = MongoClient(
@@ -23,6 +22,7 @@ db = client["mediblock"]
 patients_collection = db["patients"]
 reports_collection = db["reports"]
 treatments_collection = db["treatments"]
+shared_collection = db["shared_data"]   # ⭐ FIXED
 
 
 # ---------------- Encryption Setup ----------------
@@ -230,15 +230,7 @@ def view_reports(patient_id):
     return render_template("view_reports.html", reports=report_list)
 
 
-# ---------------- PATIENT ----------------
-@app.route("/patient")
-def patient():
-
-    blocks = load_blocks()
-    valid = verify_chain()
-
-    return render_template("patient.html", blocks=blocks, valid=valid)
-
+# ---------------- SHARE DATA ----------------
 @app.route("/share_data", methods=["GET","POST"])
 def share_data():
 
@@ -273,7 +265,18 @@ def share_data():
         )
 
     return render_template("share_data.html")
-    
+
+
+# ---------------- PATIENT ----------------
+@app.route("/patient")
+def patient():
+
+    blocks = load_blocks()
+    valid = verify_chain()
+
+    return render_template("patient.html", blocks=blocks, valid=valid)
+
+
 # ---------------- INSURANCE ----------------
 @app.route("/insurance")
 def insurance():
