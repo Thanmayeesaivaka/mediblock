@@ -165,7 +165,8 @@ def logout():
     session.clear()
 
     return redirect("/")
-
+@app.route("/register", methods=["GET","POST"])
+def register():
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
