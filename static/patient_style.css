@@ -154,3 +154,63 @@ transform:scale(1.07);
 box-shadow:0 15px 35px rgba(0,0,0,0.3);
 
 }
+
+/* TABLE STYLE */
+
+table{
+
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+}
+
+table th{
+
+background:#8e24aa;
+color:white;
+padding:12px;
+
+}
+
+table td{
+
+padding:12px;
+border:1px solid #ddd;
+
+}
+
+/* FORM BOX */
+
+.form-box{
+
+width:40%;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+}
+
+.form-box input{
+
+width:100%;
+padding:10px;
+margin:10px 0;
+
+}
+
+.form-box button{
+
+background:#8e24aa;
+color:white;
+border:none;
+padding:10px;
+width:100%;
+border-radius:5px;
+cursor:pointer;
+
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Medical History</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='patient_style.css') }}">
+</head>
+
+<body class="patient-bg">
+
+<div class="topbar">
+<div class="logo">💜 MediBlock</div>
+<div class="logout"><a href="/patient">Back</a></div>
+</div>
+
+<h2 class="dashboard-title">Medical History</h2>
+
+<table>
+
+<tr>
+<th>Report</th>
+<th>Uploaded By</th>
+<th>Hash Key</th>
+</tr>
+
+{% for r in history %}
+
+<tr>
+<td>{{r.report_name}}</td>
+<td>{{r.uploaded_by}}</td>
+<td>{{r.hash}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

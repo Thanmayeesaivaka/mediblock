@@ -343,6 +343,120 @@ def insurance():
 
 
 # =====================================================
+# PATIENT DASHBOARD
+# =====================================================
+
+@app.route("/patient")
+def patient():
+
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("patient.html")
+
+
+# =====================================================
+# VIEW MEDICAL HISTORY (DECRYPTED REPORTS)
+# =====================================================
+
+@app.route("/medical_history")
+def medical_history():
+
+    if "user" not in session:
+        return redirect("/")
+
+    patient_id = session["user"]
+
+    reports = list(reports_collection.find({"patient_id": patient_id}))
+
+    history = []
+
+    for r in reports:
+
+        encrypted_data = base64.b64decode(r["encrypted_report"])
+
+        decrypted_data = cipher.decrypt(encrypted_data)
+
+        history.append({
+            "report_name": r["report_name"],
+            "report_data": decrypted_data.decode(errors="ignore"),
+            "uploaded_by": r["uploaded_by"],
+            "hash": r["hash_key"]
+        })
+
+    return render_template("medical_history.html", history=history)
+
+
+# =====================================================
+# GRANT ACCESS TO DOCTOR / INSURANCE
+# =====================================================
+
+@app.route("/grant_access", methods=["GET","POST"])
+def grant_access():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        receiver = request.form["receiver"]
+
+        share_text = f"{session['user']}-{receiver}"
+
+        hash_key = hashlib.sha256(share_text.encode()).hexdigest()
+
+        share_document = {
+
+            "patient_id": session["user"],
+            "shared_with": receiver,
+            "hash_key": hash_key,
+            "date": datetime.now().strftime("%Y-%m-%d")
+
+        }
+
+        shared_collection.insert_one(share_document)
+
+        return render_template("grant_access.html",
+                               message="Access Granted Successfully",
+                               key=hash_key)
+
+    return render_template("grant_access.html")
+
+
+# =====================================================
+# TRACK TREATMENTS (DECRYPTED)
+# =====================================================
+
+@app.route("/track_treatment")
+def track_treatment():
+
+    if "user" not in session:
+        return redirect("/")
+
+    patient_id = session["user"]
+
+    treatments = list(treatments_collection.find({"patient_id": patient_id}))
+
+    history = []
+
+    for t in treatments:
+
+        encrypted_data = base64.b64decode(t["encrypted_treatment"])
+
+        decrypted_data = cipher.decrypt(encrypted_data)
+
+        history.append({
+
+            "doctor": t["doctor"],
+            "treatment": decrypted_data.decode(),
+            "date": t["date"],
+            "hash": t["hash_key"]
+
+        })
+
+    return render_template("track_treatment.html", history=history)
+
+# =====================================================
 # LOGOUT
 # =====================================================
 

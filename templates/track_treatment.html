@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Track Treatment</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='patient_style.css') }}">
+</head>
+
+<body class="patient-bg">
+
+<div class="topbar">
+<div class="logo">💜 MediBlock</div>
+<div class="logout"><a href="/patient">Back</a></div>
+</div>
+
+<h2 class="dashboard-title">Treatment History</h2>
+
+<table>
+
+<tr>
+<th>Doctor</th>
+<th>Treatment</th>
+<th>Date</th>
+<th>Hash</th>
+</tr>
+
+{% for t in history %}
+
+<tr>
+<td>{{t.doctor}}</td>
+<td>{{t.treatment}}</td>
+<td>{{t.date}}</td>
+<td>{{t.hash}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

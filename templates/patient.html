@@ -1,36 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>MediBlock - Patient Dashboard</title>
+<title>Patient Dashboard</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='patient_style.css') }}">
 </head>
 
 <body class="patient-bg">
 
-<!-- TOP NAVBAR -->
 <div class="topbar">
-
-<div class="logo">
-💜 MediBlock
-</div>
-
-<div class="logout">
-<a href="/logout">Logout</a>
-</div>
-
+<div class="logo">💜 MediBlock</div>
+<div class="logout"><a href="/logout">Logout</a></div>
 </div>
 
 <h2 class="dashboard-title">Patient Dashboard</h2>
-
 
 <div class="card-container">
 
 <div class="feature-card">
 <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
 <h3>View Medical History</h3>
-<a href="/medical_history">View</a>
+<a href="/medical_history">Open</a>
 </div>
-
 
 <div class="feature-card">
 <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png">
@@ -38,18 +28,10 @@
 <a href="/grant_access">Grant</a>
 </div>
 
-
 <div class="feature-card">
 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png">
 <h3>Track Treatments</h3>
 <a href="/track_treatment">Track</a>
-</div>
-
-
-<div class="feature-card">
-<img src="https://cdn-icons-png.flaticon.com/512/1828/1828479.png">
-<h3>Logout</h3>
-<a href="/logout">Exit</a>
 </div>
 
 </div>

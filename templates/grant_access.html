@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Grant Access</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='patient_style.css') }}">
+</head>
+
+<body class="patient-bg">
+
+<div class="topbar">
+<div class="logo">💜 MediBlock</div>
+<div class="logout"><a href="/patient">Back</a></div>
+</div>
+
+<h2 class="dashboard-title">Grant Access</h2>
+
+<div class="form-box">
+
+<form method="POST">
+
+Receiver Username
+<input type="text" name="receiver" required>
+
+<button type="submit">Grant Access</button>
+
+</form>
+
+{% if message %}
+<p style="color:green">{{message}}</p>
+<p>Hash Key: {{key}}</p>
+{% endif %}
+
+</div>
+
+</body>
+</html>
