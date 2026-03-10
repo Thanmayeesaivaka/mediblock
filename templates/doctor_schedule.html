@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Doctor Schedule</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+table{
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1565c0;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body class="staff-bg">
+
+<div class="topbar">
+
+<div class="logo">
+🏥 MediBlock
+</div>
+
+<div class="logout">
+<a href="/doctor">Back</a>
+</div>
+
+</div>
+
+<h2 class="dashboard-title">
+
+Today's Appointments ({{ today }})
+
+</h2>
+
+<table>
+
+<tr>
+<th>Patient ID</th>
+<th>Patient Name</th>
+<th>Time</th>
+<th>Status</th>
+</tr>
+
+{% for appt in appointments %}
+
+<tr>
+
+<td>{{ appt.patient_id }}</td>
+<td>{{ appt.patient_name }}</td>
+<td>{{ appt.time }}</td>
+<td>{{ appt.status }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

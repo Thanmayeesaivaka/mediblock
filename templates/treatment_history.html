@@ -2,31 +2,9 @@
 <html>
 <head>
 
-<title>Doctor Schedule</title>
+<title>Treatment History</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-<style>
-
-table{
-width:80%;
-margin:auto;
-background:white;
-border-collapse:collapse;
-}
-
-th,td{
-padding:12px;
-border:1px solid #333;
-text-align:center;
-}
-
-th{
-background:#1565c0;
-color:white;
-}
-
-</style>
 
 </head>
 
@@ -44,27 +22,23 @@ color:white;
 
 </div>
 
-<h2 class="dashboard-title">
-Today's Appointments ({{ today }})
-</h2>
+<h2 class="dashboard-title">Treatment History</h2>
 
-<table>
+<table border="1" style="width:80%;margin:auto;background:white;text-align:center">
 
 <tr>
 <th>Patient ID</th>
-<th>Patient Name</th>
-<th>Time</th>
-<th>Status</th>
+<th>Doctor</th>
+<th>Hash Key</th>
 </tr>
 
-{% for appt in appointments %}
+{% for t in blocks %}
 
 <tr>
 
-<td>{{ appt.patient_id }}</td>
-<td>{{ appt.patient_name }}</td>
-<td>{{ appt.time }}</td>
-<td>{{ appt.status }}</td>
+<td>{{ t.patient_id }}</td>
+<td>{{ t.doctor }}</td>
+<td>{{ t.hash_key }}</td>
 
 </tr>
 

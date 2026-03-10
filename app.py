@@ -11,7 +11,8 @@ from blockchain import create_block, verify_chain
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
-# ---------------- MongoDB Atlas ----------------
+
+# ---------------- MongoDB ----------------
 
 client = MongoClient(
 "mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
@@ -22,11 +23,11 @@ db = client["mediblock"]
 patients_collection = db["patients"]
 reports_collection = db["reports"]
 treatments_collection = db["treatments"]
-shared_collection = db["shared_data"]  
+shared_collection = db["shared_data"]
 appointments_collection = db["appointments"]
 
 
-# ---------------- Encryption Setup ----------------
+# ---------------- Encryption ----------------
 
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
@@ -36,29 +37,6 @@ cipher = Fernet(encryption_key)
 @app.route("/")
 def home():
     return render_template("login.html")
-
-
-# ---------------- REGISTER ----------------
-@app.route("/register", methods=["GET","POST"])
-def register():
-
-    if request.method == "POST":
-
-        user = {
-            "username": request.form["username"],
-            "password": request.form["password"],
-            "fullname": request.form["fullname"],
-            "age": request.form["age"],
-            "gender": request.form["gender"],
-            "phone": request.form["phone"],
-            "address": request.form["address"],
-            "role": request.form["role"]
-        }
-
-        add_user(user)
-        return redirect("/")
-
-    return render_template("register.html")
 
 
 # ---------------- LOGIN ----------------
@@ -91,181 +69,19 @@ def login():
     return render_template("login.html", error="Invalid Login Credentials")
 
 
-# ---------------- ADMIN ----------------
-@app.route("/admin")
-def admin():
-    return render_template("admin.html")
-
-
 # ---------------- DOCTOR DASHBOARD ----------------
-@app.route("/doctor", methods=["GET","POST"])
+@app.route("/doctor")
 def doctor():
 
     if "user" not in session:
         return redirect("/")
 
-    if request.method == "POST":
-
-        patient = request.form["patient"]
-        diagnosis = request.form["diagnosis"]
-        prescription = request.form["prescription"]
-
-        create_block(patient, session["user"], diagnosis, prescription)
-
-    blocks = load_blocks()
-
-    return render_template("doctor.html", blocks=blocks)
+    return render_template("doctor.html")
 
 
-# ---------------- VIEW PATIENT RECORDS ----------------
-@app.route("/view_records")
-def view_records():
-
-    if "user" not in session:
-        return redirect("/")
-
-    patients = list(patients_collection.find())
-
-    return render_template("view_records.html", patients=patients)
-
-
-# ---------------- UPDATE TREATMENT ----------------
-@app.route("/update_treatment", methods=["GET","POST"])
-def update_treatment():
-
-    if "user" not in session:
-        return redirect("/")
-
-    if request.method == "POST":
-
-        patient_id = request.form["patient"]
-        diagnosis = request.form["diagnosis"]
-        prescription = request.form["prescription"]
-
-        treatment_text = f"Diagnosis: {diagnosis} | Prescription: {prescription}"
-
-        treatment_bytes = treatment_text.encode()
-
-        hash_key = hashlib.sha256(treatment_bytes).hexdigest()
-
-        encrypted_data = cipher.encrypt(treatment_bytes)
-
-        treatment_document = {
-
-            "patient_id": patient_id,
-            "doctor": session["user"],
-            "encrypted_treatment": base64.b64encode(encrypted_data).decode(),
-            "hash_key": hash_key
-
-        }
-
-        treatments_collection.insert_one(treatment_document)
-
-        return render_template(
-            "update_treatment.html",
-            message="Treatment Encrypted and Stored Successfully"
-        )
-
-    return render_template("update_treatment.html")
-
-
-# ---------------- UPLOAD REPORT ----------------
-@app.route("/upload_report", methods=["GET","POST"])
-def upload_report():
-
-    if "user" not in session:
-        return redirect("/")
-
-    if request.method == "POST":
-
-        patient_id = request.form["pid"]
-        file = request.files["report"]
-
-        file_data = file.read()
-
-        hash_key = hashlib.sha256(file_data).hexdigest()
-
-        encrypted_data = cipher.encrypt(file_data)
-
-        report_document = {
-
-            "patient_id": patient_id,
-            "report_name": file.filename,
-            "encrypted_report": base64.b64encode(encrypted_data).decode(),
-            "hash_key": hash_key,
-            "uploaded_by": session["user"]
-
-        }
-
-        reports_collection.insert_one(report_document)
-
-        return render_template(
-            "upload_report.html",
-            message="Report Encrypted and Stored Successfully"
-        )
-
-    return render_template("upload_report.html")
-
-
-# ---------------- VIEW REPORTS ----------------
-@app.route("/view_reports/<patient_id>")
-def view_reports(patient_id):
-
-    reports = reports_collection.find({"patient_id": patient_id})
-
-    report_list = []
-
-    for report in reports:
-
-        encrypted_data = base64.b64decode(report["encrypted_report"])
-
-        decrypted_data = cipher.decrypt(encrypted_data)
-
-        report_list.append({
-
-            "name": report["report_name"],
-            "hash": report["hash_key"]
-
-        })
-
-    return render_template("view_reports.html", reports=report_list)
-
-
-# ---------------- SHARE DATA ----------------
-@app.route("/share_data", methods=["GET","POST"])
-def share_data():
-
-    if "user" not in session:
-        return redirect("/")
-
-    if request.method == "POST":
-
-        patient_id = request.form["patient"]
-        receiver = request.form["receiver"]
-
-        share_text = f"{patient_id}-{receiver}-{session['user']}"
-
-        hash_key = hashlib.sha256(share_text.encode()).hexdigest()
-
-        share_document = {
-
-            "patient_id": patient_id,
-            "shared_with": receiver,
-            "shared_by": session["user"],
-            "hash_key": hash_key,
-            "date": datetime.now().strftime("%Y-%m-%d")
-
-        }
-
-        shared_collection.insert_one(share_document)
-
-        return render_template(
-            "share_data.html",
-            message="Patient Data Shared Successfully",
-            key=hash_key
-        )
-
-    return render_template("share_data.html")
+# =====================================================
+# CREATE APPOINTMENT
+# =====================================================
 
 @app.route("/create_appointment", methods=["GET","POST"])
 def create_appointment():
@@ -289,6 +105,11 @@ def create_appointment():
 
     return render_template("create_appointment.html")
 
+
+# =====================================================
+# DOCTOR DAILY SCHEDULE
+# =====================================================
+
 @app.route("/doctor_schedule")
 def doctor_schedule():
 
@@ -310,33 +131,12 @@ def doctor_schedule():
     )
 
 
-
-
-# ---------------- PATIENT ----------------
-@app.route("/patient")
-def patient():
-
-    blocks = load_blocks()
-    valid = verify_chain()
-
-    return render_template("patient.html", blocks=blocks, valid=valid)
-
-
-# ---------------- INSURANCE ----------------
-@app.route("/insurance")
-def insurance():
-
-    blocks = load_blocks()
-    valid = verify_chain()
-
-    return render_template("insurance.html", blocks=blocks, valid=valid)
-
-
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
 
     session.clear()
+
     return redirect("/")
 
 
