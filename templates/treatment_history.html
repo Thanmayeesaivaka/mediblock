@@ -1,35 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Treatment History</title>
+
+<title>Doctor Schedule</title>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+table{
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1565c0;
+color:white;
+}
+
+</style>
+
 </head>
 
 <body class="staff-bg">
 
 <div class="topbar">
-<div class="logo">🏥 MediBlock</div>
+
+<div class="logo">
+🏥 MediBlock
+</div>
+
 <div class="logout">
-<a href="/staff_home">Back</a>
-</div>
+<a href="/doctor">Back</a>
 </div>
 
-<h2 class="dashboard-title">Treatment History</h2>
+</div>
 
-<table border="1" style="width:80%;margin:auto;background:white;text-align:center">
+<h2 class="dashboard-title">
+Today's Appointments ({{ today }})
+</h2>
+
+<table>
 
 <tr>
 <th>Patient ID</th>
-<th>Treatment</th>
-<th>Date</th>
+<th>Patient Name</th>
+<th>Time</th>
+<th>Status</th>
 </tr>
 
-{% for row in history %}
+{% for appt in appointments %}
+
 <tr>
-<td>{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2]}}</td>
+
+<td>{{ appt.patient_id }}</td>
+<td>{{ appt.patient_name }}</td>
+<td>{{ appt.time }}</td>
+<td>{{ appt.status }}</td>
+
 </tr>
+
 {% endfor %}
 
 </table>

@@ -22,7 +22,8 @@ db = client["mediblock"]
 patients_collection = db["patients"]
 reports_collection = db["reports"]
 treatments_collection = db["treatments"]
-shared_collection = db["shared_data"]   # ⭐ FIXED
+shared_collection = db["shared_data"]  
+appointments_collection = db["appointments"]
 
 
 # ---------------- Encryption Setup ----------------
@@ -265,6 +266,48 @@ def share_data():
         )
 
     return render_template("share_data.html")
+
+@app.route("/doctor_schedule")
+def doctor_schedule():
+
+    if "user" not in session:
+        return redirect("/")
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    appointments = list(
+        appointments_collection.find(
+            {"doctor": session["user"], "date": today}
+        )
+    )
+
+    return render_template(
+        "doctor_schedule.html",
+        appointments=appointments,
+        today=today
+    )
+
+@app.route("/create_appointment", methods=["GET","POST"])
+def create_appointment():
+
+    if request.method == "POST":
+
+        appointment = {
+
+            "patient_id": request.form["patient_id"],
+            "patient_name": request.form["patient_name"],
+            "doctor": request.form["doctor"],
+            "date": request.form["date"],
+            "time": request.form["time"],
+            "status": "Scheduled"
+
+        }
+
+        appointments_collection.insert_one(appointment)
+
+        return redirect("/doctor_schedule")
+
+    return render_template("create_appointment.html")
 
 
 # ---------------- PATIENT ----------------
