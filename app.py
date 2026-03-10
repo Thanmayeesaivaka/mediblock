@@ -341,7 +341,6 @@ def insurance():
 
     return render_template("insurance.html", blocks=blocks, valid=valid)
 
-
 # =====================================================
 # PATIENT DASHBOARD
 # =====================================================
@@ -352,7 +351,10 @@ def patient():
     if "user" not in session:
         return redirect("/")
 
-    return render_template("patient.html")
+    blocks = load_blocks()
+    valid = verify_chain()
+
+    return render_template("patient_home.html", blocks=blocks, valid=valid)
 
 
 # =====================================================
