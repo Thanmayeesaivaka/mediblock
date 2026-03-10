@@ -252,7 +252,6 @@ def share_data():
 
         share_text = f"{patient_id}-{receiver}-{session['user']}"
 
-        # SHA256 Hash Key
         hash_key = hashlib.sha256(share_text.encode()).hexdigest()
 
         share_document = {
@@ -274,6 +273,7 @@ def share_data():
         )
 
     return render_template("share_data.html")
+    
 # ---------------- INSURANCE ----------------
 @app.route("/insurance")
 def insurance():
