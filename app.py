@@ -78,6 +78,33 @@ def doctor():
 
     return render_template("doctor.html")
 
+@app.route("/treatment_history")
+def treatment_history():
+
+    if "user" not in session:
+        return redirect("/")
+
+    treatments = list(treatments_collection.find())
+
+    history = []
+
+    for t in treatments:
+
+        encrypted_data = base64.b64decode(t["encrypted_treatment"])
+
+        decrypted_data = cipher.decrypt(encrypted_data)
+
+        history.append({
+
+            "patient_id": t["patient_id"],
+            "doctor": t["doctor"],
+            "treatment": decrypted_data.decode(),
+            "hash": t["hash_key"]
+
+        })
+
+    return render_template("treatment_history.html", history=history)
+
 
 # =====================================================
 # CREATE APPOINTMENT

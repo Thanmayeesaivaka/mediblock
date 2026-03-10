@@ -6,6 +6,28 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+<style>
+
+table{
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border:1px solid #333;
+text-align:center;
+}
+
+th{
+background:#1976d2;
+color:white;
+}
+
+</style>
+
 </head>
 
 <body class="staff-bg">
@@ -24,21 +46,23 @@
 
 <h2 class="dashboard-title">Treatment History</h2>
 
-<table border="1" style="width:80%;margin:auto;background:white;text-align:center">
+<table>
 
 <tr>
 <th>Patient ID</th>
 <th>Doctor</th>
+<th>Treatment Details</th>
 <th>Hash Key</th>
 </tr>
 
-{% for t in blocks %}
+{% for t in history %}
 
 <tr>
 
 <td>{{ t.patient_id }}</td>
 <td>{{ t.doctor }}</td>
-<td>{{ t.hash_key }}</td>
+<td>{{ t.treatment }}</td>
+<td>{{ t.hash }}</td>
 
 </tr>
 
