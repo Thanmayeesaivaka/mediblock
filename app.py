@@ -10,7 +10,8 @@ from blockchain import create_block, verify_chain
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
-# ---------------- MongoDB Atlas Connection ----------------
+
+# ---------------- MongoDB Atlas ----------------
 
 client = MongoClient(
 "mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
@@ -20,10 +21,11 @@ db = client["mediblock"]
 
 patients_collection = db["patients"]
 reports_collection = db["reports"]
+treatments_collection = db["treatments"]
+
 
 # ---------------- Encryption Setup ----------------
 
-# Generate once using Fernet.generate_key()
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
 
@@ -140,13 +142,10 @@ def update_treatment():
 
         treatment_text = f"Diagnosis: {diagnosis} | Prescription: {prescription}"
 
-        # Convert to bytes
         treatment_bytes = treatment_text.encode()
 
-        # SHA256 hash
         hash_key = hashlib.sha256(treatment_bytes).hexdigest()
 
-        # AES encryption
         encrypted_data = cipher.encrypt(treatment_bytes)
 
         treatment_document = {
@@ -168,10 +167,7 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# =====================================================
-# UPLOAD REPORT (AES + SHA256)
-# =====================================================
-
+# ---------------- UPLOAD REPORT ----------------
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
 
@@ -180,38 +176,31 @@ def upload_report():
 
     if request.method == "POST":
 
-        try:
+        patient_id = request.form["pid"]
+        file = request.files["report"]
 
-            patient_id = request.form["pid"]
-            file = request.files["report"]
+        file_data = file.read()
 
-            file_data = file.read()
+        hash_key = hashlib.sha256(file_data).hexdigest()
 
-            # SHA256 HASH
-            hash_key = hashlib.sha256(file_data).hexdigest()
+        encrypted_data = cipher.encrypt(file_data)
 
-            # AES Encryption
-            encrypted_data = cipher.encrypt(file_data)
+        report_document = {
 
-            report_document = {
+            "patient_id": patient_id,
+            "report_name": file.filename,
+            "encrypted_report": base64.b64encode(encrypted_data).decode(),
+            "hash_key": hash_key,
+            "uploaded_by": session["user"]
 
-                "patient_id": patient_id,
-                "report_name": file.filename,
-                "encrypted_report": base64.b64encode(encrypted_data).decode(),
-                "hash_key": hash_key,
-                "uploaded_by": session["user"]
+        }
 
-            }
+        reports_collection.insert_one(report_document)
 
-            reports_collection.insert_one(report_document)
-
-            return render_template(
-                "upload_report.html",
-                message="Report Encrypted and Stored Successfully"
-            )
-
-        except Exception as e:
-            return f"Error: {str(e)}"
+        return render_template(
+            "upload_report.html",
+            message="Report Encrypted and Stored Successfully"
+        )
 
     return render_template("upload_report.html")
 
@@ -227,11 +216,14 @@ def view_reports(patient_id):
     for report in reports:
 
         encrypted_data = base64.b64decode(report["encrypted_report"])
+
         decrypted_data = cipher.decrypt(encrypted_data)
 
         report_list.append({
+
             "name": report["report_name"],
             "hash": report["hash_key"]
+
         })
 
     return render_template("view_reports.html", reports=report_list)
