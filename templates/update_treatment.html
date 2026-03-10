@@ -9,24 +9,33 @@
 
 <div class="topbar">
 <div class="logo">🏥 MediBlock</div>
+
 <div class="logout">
-<a href="/staff_home">Back</a>
+<a href="/doctor">Back</a>
 </div>
 </div>
 
-<h2 class="dashboard-title">Update Treatment Details</h2>
+<h2 class="dashboard-title">Update Treatment</h2>
 
-<form method="POST" style="width:40%;margin:auto;background:white;padding:30px;border-radius:10px">
+<form method="POST"
+style="width:40%;margin:auto;background:white;padding:30px;border-radius:10px">
 
-Patient ID<br>
-<input type="text" name="pid"><br><br>
+<label>Patient ID</label><br>
+<input type="text" name="patient" required><br><br>
 
-Treatment Details<br>
-<textarea name="treatment"></textarea><br><br>
+<label>Diagnosis</label><br>
+<textarea name="diagnosis" required></textarea><br><br>
 
-<input type="submit" value="Update">
+<label>Prescription</label><br>
+<textarea name="prescription" required></textarea><br><br>
+
+<input type="submit" value="Update Treatment">
 
 </form>
+
+{% if message %}
+<p style="text-align:center;color:green">{{ message }}</p>
+{% endif %}
 
 </body>
 </html>

@@ -134,13 +134,36 @@ def update_treatment():
 
     if request.method == "POST":
 
-        patient = request.form["patient"]
+        patient_id = request.form["patient"]
         diagnosis = request.form["diagnosis"]
         prescription = request.form["prescription"]
 
-        create_block(patient, session["user"], diagnosis, prescription)
+        treatment_text = f"Diagnosis: {diagnosis} | Prescription: {prescription}"
 
-        return redirect("/view_records")
+        # Convert to bytes
+        treatment_bytes = treatment_text.encode()
+
+        # SHA256 hash
+        hash_key = hashlib.sha256(treatment_bytes).hexdigest()
+
+        # AES encryption
+        encrypted_data = cipher.encrypt(treatment_bytes)
+
+        treatment_document = {
+
+            "patient_id": patient_id,
+            "doctor": session["user"],
+            "encrypted_treatment": base64.b64encode(encrypted_data).decode(),
+            "hash_key": hash_key
+
+        }
+
+        treatments_collection.insert_one(treatment_document)
+
+        return render_template(
+            "update_treatment.html",
+            message="Treatment Encrypted and Stored Successfully"
+        )
 
     return render_template("update_treatment.html")
 
