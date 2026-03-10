@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 from pymongo import MongoClient
 from cryptography.fernet import Fernet
+from datetime import datetime
 import hashlib
 import base64
 
@@ -238,7 +239,41 @@ def patient():
 
     return render_template("patient.html", blocks=blocks, valid=valid)
 
+@app.route("/share_data", methods=["GET","POST"])
+def share_data():
 
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        patient_id = request.form["patient"]
+        receiver = request.form["receiver"]
+
+        share_text = f"{patient_id}-{receiver}-{session['user']}"
+
+        # SHA256 Hash Key
+        hash_key = hashlib.sha256(share_text.encode()).hexdigest()
+
+        share_document = {
+
+            "patient_id": patient_id,
+            "shared_with": receiver,
+            "shared_by": session["user"],
+            "hash_key": hash_key,
+            "date": datetime.now().strftime("%Y-%m-%d")
+
+        }
+
+        shared_collection.insert_one(share_document)
+
+        return render_template(
+            "share_data.html",
+            message="Patient Data Shared Successfully",
+            key=hash_key
+        )
+
+    return render_template("share_data.html")
 # ---------------- INSURANCE ----------------
 @app.route("/insurance")
 def insurance():
