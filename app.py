@@ -128,7 +128,7 @@ def view_records():
 
 
 # =====================================================
-# UPDATE TREATMENT (ENCRYPTED)
+# UPDATE TREATMENT
 # =====================================================
 
 @app.route("/update_treatment", methods=["GET","POST"])
@@ -179,7 +179,6 @@ def treatment_history():
     for t in treatments:
 
         encrypted_data = base64.b64decode(t["encrypted_treatment"])
-
         decrypted_data = cipher.decrypt(encrypted_data)
 
         history.append({
@@ -195,7 +194,7 @@ def treatment_history():
 
 
 # =====================================================
-# UPLOAD REPORT (ENCRYPTED)
+# UPLOAD REPORT
 # =====================================================
 
 @app.route("/upload_report", methods=["GET","POST"])
@@ -290,7 +289,7 @@ def create_appointment():
 
 
 # =====================================================
-# DOCTOR DAILY SCHEDULE
+# DOCTOR SCHEDULE
 # =====================================================
 
 @app.route("/doctor_schedule")
@@ -308,41 +307,7 @@ def doctor_schedule():
 
 
 # =====================================================
-# PATIENT DASHBOARD
-# =====================================================
-
-@app.route("/patient")
-def patient():
-
-    blocks = load_blocks()
-    valid = verify_chain()
-
-    return render_template("patient.html", blocks=blocks, valid=valid)
-
-
-# =====================================================
-# ADMIN
-# =====================================================
-
-@app.route("/admin")
-def admin():
-    return render_template("admin.html")
-
-
-# =====================================================
-# INSURANCE
-# =====================================================
-
-@app.route("/insurance")
-def insurance():
-
-    blocks = load_blocks()
-    valid = verify_chain()
-
-    return render_template("insurance.html", blocks=blocks, valid=valid)
-
-# =====================================================
-# PATIENT DASHBOARD
+# PATIENT DASHBOARD (ONLY ONE ROUTE)
 # =====================================================
 
 @app.route("/patient")
@@ -358,7 +323,7 @@ def patient():
 
 
 # =====================================================
-# VIEW MEDICAL HISTORY (DECRYPTED REPORTS)
+# VIEW MEDICAL HISTORY
 # =====================================================
 
 @app.route("/medical_history")
@@ -376,12 +341,10 @@ def medical_history():
     for r in reports:
 
         encrypted_data = base64.b64decode(r["encrypted_report"])
-
         decrypted_data = cipher.decrypt(encrypted_data)
 
         history.append({
             "report_name": r["report_name"],
-            "report_data": decrypted_data.decode(errors="ignore"),
             "uploaded_by": r["uploaded_by"],
             "hash": r["hash_key"]
         })
@@ -390,7 +353,7 @@ def medical_history():
 
 
 # =====================================================
-# GRANT ACCESS TO DOCTOR / INSURANCE
+# GRANT ACCESS
 # =====================================================
 
 @app.route("/grant_access", methods=["GET","POST"])
@@ -426,7 +389,7 @@ def grant_access():
 
 
 # =====================================================
-# TRACK TREATMENTS (DECRYPTED)
+# TRACK TREATMENT
 # =====================================================
 
 @app.route("/track_treatment")
@@ -444,7 +407,6 @@ def track_treatment():
     for t in treatments:
 
         encrypted_data = base64.b64decode(t["encrypted_treatment"])
-
         decrypted_data = cipher.decrypt(encrypted_data)
 
         history.append({
@@ -457,6 +419,29 @@ def track_treatment():
         })
 
     return render_template("track_treatment.html", history=history)
+
+
+# =====================================================
+# ADMIN
+# =====================================================
+
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")
+
+
+# =====================================================
+# INSURANCE
+# =====================================================
+
+@app.route("/insurance")
+def insurance():
+
+    blocks = load_blocks()
+    valid = verify_chain()
+
+    return render_template("insurance.html", blocks=blocks, valid=valid)
+
 
 # =====================================================
 # LOGOUT
