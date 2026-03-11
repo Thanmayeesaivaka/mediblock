@@ -319,7 +319,7 @@ def patient():
     blocks = load_blocks()
     valid = verify_chain()
 
-    return render_template("patient_home.html", blocks=blocks, valid=valid)
+    return render_template("patient.html", blocks=blocks, valid=valid)
 
 
 # =====================================================
