@@ -100,7 +100,7 @@ def login():
             elif role == "Patient":
                 return redirect("/patient")
 
-            elif role == "Research":
+            elif role == "Research Analyst":
                 return redirect("/research")
 
             elif role == "Admin":
