@@ -12,7 +12,9 @@ app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 
-# ---------------- MongoDB CONNECTION ----------------
+# ================================
+# MongoDB CONNECTION
+# ================================
 
 client = MongoClient("mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority")
 
@@ -24,12 +26,13 @@ treatments_collection = db["treatments"]
 shared_collection = db["shared_data"]
 appointments_collection = db["appointments"]
 
-# Research collections
 research_reports_collection = db["research_reports"]
 research_findings_collection = db["research_findings"]
 
 
-# ---------------- ENCRYPTION ----------------
+# ================================
+# ENCRYPTION
+# ================================
 
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
@@ -48,7 +51,7 @@ def home():
 # REGISTER
 # =====================================================
 
-@app.route("/register", methods=["GET","POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
@@ -72,36 +75,40 @@ def register():
 
 
 # =====================================================
-# LOGIN
+# LOGIN  (FIXED: GET + POST)
 # =====================================================
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    username = request.form["username"]
-    password = request.form["password"]
-    role = request.form["role"]
+    if request.method == "POST":
 
-    user = find_user(username, password, role)
+        username = request.form["username"]
+        password = request.form["password"]
+        role = request.form["role"]
 
-    if user:
+        user = find_user(username, password, role)
 
-        session["user"] = username
-        session["role"] = role
+        if user:
 
-        if role == "Doctor":
-            return redirect("/doctor")
+            session["user"] = username
+            session["role"] = role
 
-        elif role == "Patient":
-            return redirect("/patient")
+            if role == "Doctor":
+                return redirect("/doctor")
 
-        elif role == "Research":
-            return redirect("/research")
+            elif role == "Patient":
+                return redirect("/patient")
 
-        elif role == "Admin":
-            return redirect("/admin")
+            elif role == "Research":
+                return redirect("/research")
 
-    return render_template("login.html", error="Invalid Login Credentials")
+            elif role == "Admin":
+                return redirect("/admin")
+
+        return render_template("login.html", error="Invalid Login Credentials")
+
+    return render_template("login.html")
 
 
 # =====================================================
@@ -121,8 +128,11 @@ def doctor():
 # UPDATE TREATMENT
 # =====================================================
 
-@app.route("/update_treatment", methods=["GET","POST"])
+@app.route("/update_treatment", methods=["GET", "POST"])
 def update_treatment():
+
+    if "user" not in session:
+        return redirect("/")
 
     if request.method == "POST":
 
@@ -150,9 +160,25 @@ def update_treatment():
 
         treatments_collection.insert_one(treatment_document)
 
-        return render_template("update_treatment.html", message="Treatment Stored Successfully")
+        return render_template(
+            "update_treatment.html",
+            message="Treatment Stored Successfully"
+        )
 
     return render_template("update_treatment.html")
+
+
+# =====================================================
+# PATIENT DASHBOARD
+# =====================================================
+
+@app.route("/patient")
+def patient():
+
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("patient.html")
 
 
 # =====================================================
@@ -165,7 +191,7 @@ def research():
     if "user" not in session:
         return redirect("/")
 
-    return render_template("research_home.html")
+    return render_template("research.html")
 
 
 # =====================================================
@@ -175,6 +201,9 @@ def research():
 @app.route("/analyze_info")
 def analyze_info():
 
+    if "user" not in session:
+        return redirect("/")
+
     reports = list(reports_collection.find())
 
     data = []
@@ -182,21 +211,24 @@ def analyze_info():
     for r in reports:
 
         data.append({
-            "patient_id": r["patient_id"],
-            "report_name": r["report_name"],
-            "uploaded_by": r["uploaded_by"],
-            "hash": r["hash_key"]
+            "patient_id": r.get("patient_id"),
+            "report_name": r.get("report_name"),
+            "uploaded_by": r.get("uploaded_by"),
+            "hash": r.get("hash_key")
         })
 
     return render_template("analyze_info.html", data=data)
 
 
 # =====================================================
-# GENERATE REPORTS (CHART DATA)
+# GENERATE REPORTS
 # =====================================================
 
 @app.route("/generate_reports")
 def generate_reports():
+
+    if "user" not in session:
+        return redirect("/")
 
     treatments = list(treatments_collection.find())
 
@@ -209,23 +241,32 @@ def generate_reports():
 
         disease = decrypted_data.split("|")[0].replace("Diagnosis:", "").strip()
 
-        if disease in disease_count:
-            disease_count[disease] += 1
-        else:
-            disease_count[disease] = 1
+        disease_count[disease] = disease_count.get(disease, 0) + 1
 
     labels = list(disease_count.keys())
     values = list(disease_count.values())
 
-    return render_template("generate_reports.html", labels=labels, values=values)
+    # if no data exist
+    if len(labels) == 0:
+        labels = ["No Data"]
+        values = [1]
+
+    return render_template(
+        "generate_reports.html",
+        labels=labels,
+        values=values
+    )
 
 
 # =====================================================
 # SUBMIT FINDINGS
 # =====================================================
 
-@app.route("/submit_findings", methods=["GET","POST"])
+@app.route("/submit_findings", methods=["GET", "POST"])
 def submit_findings():
+
+    if "user" not in session:
+        return redirect("/")
 
     if request.method == "POST":
 
@@ -241,9 +282,25 @@ def submit_findings():
 
         })
 
-        return render_template("submit_findings.html", message="Findings Submitted Successfully")
+        return render_template(
+            "submit_findings.html",
+            message="Findings Submitted Successfully"
+        )
 
     return render_template("submit_findings.html")
+
+
+# =====================================================
+# ADMIN
+# =====================================================
+
+@app.route("/admin")
+def admin():
+
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("admin.html")
 
 
 # =====================================================
