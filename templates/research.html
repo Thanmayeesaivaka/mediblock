@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>MediBlock Research Analyst Dashboard</title>
+
+<title>Research Analyst Dashboard</title>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='research_style.css') }}">
+
 </head>
 
 <body class="research-bg">
 
 <div class="topbar">
-<div class="logo">📊 MediBlock</div>
-<div class="logout"><a href="/logout">Logout</a></div>
+
+<div class="logo">
+📊 MediBlock Research
 </div>
 
+<div class="logout">
+<a href="/logout">Logout</a>
+</div>
+
+</div>
+
+
 <h2 class="dashboard-title">Research Analyst Dashboard</h2>
+
 
 <div class="card-container">
 
 <div class="feature-card">
-<img src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png">
 <h3>Analyze Information</h3>
-<a href="/analyze_info">Analyze</a>
+<a href="/analyze_info">Open</a>
 </div>
 
 <div class="feature-card">
-<img src="https://cdn-icons-png.flaticon.com/512/942/942748.png">
 <h3>Generate Reports</h3>
 <a href="/generate_reports">Generate</a>
 </div>
 
 <div class="feature-card">
-<img src="https://cdn-icons-png.flaticon.com/512/190/190411.png">
 <h3>Submit Findings</h3>
 <a href="/submit_findings">Submit</a>
 </div>

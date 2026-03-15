@@ -1,0 +1,105 @@
+body{
+margin:0;
+font-family:Segoe UI;
+}
+
+
+/* BLUE PURPLE ORANGE GRADIENT */
+
+.research-bg{
+
+background: linear-gradient(135deg,
+#1e40ff,
+#6a11cb,
+#ff8c00);
+
+min-height:100vh;
+
+}
+
+
+/* TOP BAR */
+
+.topbar{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+color:white;
+font-size:26px;
+font-weight:bold;
+
+}
+
+
+/* TITLE */
+
+.dashboard-title{
+
+text-align:center;
+color:white;
+margin-top:20px;
+
+}
+
+
+/* GRID */
+
+.card-container{
+
+width:80%;
+margin:50px auto;
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
+
+}
+
+
+/* CARDS */
+
+.feature-card{
+
+background:white;
+padding:30px;
+border-radius:12px;
+text-align:center;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+
+transition:0.3s;
+
+}
+
+
+.feature-card h3{
+
+color:#1565c0;
+
+}
+
+
+.feature-card a{
+
+display:inline-block;
+margin-top:10px;
+
+background:#ff9800;
+color:white;
+
+padding:8px 18px;
+border-radius:6px;
+text-decoration:none;
+
+}
+
+
+/* HOVER */
+
+.feature-card:hover{
+
+transform:scale(1.05);
+
+}
