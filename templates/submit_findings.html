@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Submit Findings</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='research_style.css') }}">
+</head>
+
+<body class="research-bg">
+
+<div class="topbar">
+<div class="logo">📊 MediBlock</div>
+<div class="logout"><a href="/research_home">Back</a></div>
+</div>
+
+<h2 class="dashboard-title">Submit Research Findings</h2>
+
+<div class="form-box">
+
+<form method="POST">
+
+Finding Title
+<input type="text" name="finding">
+
+Details
+<textarea name="details"></textarea>
+
+<button type="submit">Submit</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

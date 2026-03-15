@@ -1,0 +1,166 @@
+body{
+margin:0;
+font-family:Segoe UI;
+}
+
+/* BLUE ORANGE SHINY BACKGROUND */
+
+.research-bg{
+
+background: linear-gradient(135deg,#1976d2,#42a5f5,#ff9800,#ff7043);
+
+min-height:100vh;
+
+}
+
+
+/* TOPBAR */
+
+.topbar{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+color:white;
+font-size:28px;
+font-weight:bold;
+
+}
+
+.logo{
+
+font-size:30px;
+
+}
+
+.logout a{
+
+color:white;
+text-decoration:none;
+font-size:18px;
+
+}
+
+
+/* TITLE */
+
+.dashboard-title{
+
+text-align:center;
+margin-top:10px;
+color:#0d47a1;
+
+}
+
+
+/* CARD GRID */
+
+.card-container{
+
+width:85%;
+margin:40px auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
+
+}
+
+
+/* CARDS */
+
+.feature-card{
+
+background:white;
+padding:30px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+transition:0.3s;
+
+}
+
+.feature-card img{
+
+width:80px;
+margin-bottom:15px;
+
+}
+
+.feature-card h3{
+
+color:#1565c0;
+
+}
+
+.feature-card a{
+
+background:#ff9800;
+color:white;
+padding:8px 20px;
+border-radius:6px;
+text-decoration:none;
+
+}
+
+
+/* HOVER EFFECT */
+
+.feature-card:hover{
+
+transform:scale(1.07);
+box-shadow:0 15px 35px rgba(0,0,0,0.3);
+
+}
+
+
+/* FORM STYLE */
+
+.form-box{
+
+width:40%;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+
+}
+
+.form-box input,.form-box textarea{
+
+width:100%;
+padding:10px;
+margin:10px 0;
+
+}
+
+.form-box button{
+
+background:#ff9800;
+color:white;
+padding:10px;
+border:none;
+width:100%;
+border-radius:5px;
+
+}
+
+
+/* TABLE */
+
+table{
+
+width:80%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+
+}
+
+table th,table td{
+
+border:1px solid #ccc;
+padding:12px;
+text-align:center;
+
+}
