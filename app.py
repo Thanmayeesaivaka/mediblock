@@ -12,9 +12,9 @@ app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 
-# ================================
+# =================================
 # MongoDB CONNECTION
-# ================================
+# =================================
 
 client = MongoClient("mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority")
 
@@ -29,29 +29,31 @@ appointments_collection = db["appointments"]
 research_reports_collection = db["research_reports"]
 research_findings_collection = db["research_findings"]
 
+claims_collection = db["claims"]
 
-# ================================
+
+# =================================
 # ENCRYPTION
-# ================================
+# =================================
 
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
 
 
-# =====================================================
+# =================================
 # HOME
-# =====================================================
+# =================================
 
 @app.route("/")
 def home():
     return render_template("login.html")
 
 
-# =====================================================
+# =================================
 # REGISTER
-# =====================================================
+# =================================
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
 
     if request.method == "POST":
@@ -74,11 +76,11 @@ def register():
     return render_template("register.html")
 
 
-# =====================================================
-# LOGIN  (FIXED: GET + POST)
-# =====================================================
+# =================================
+# LOGIN
+# =================================
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
 
     if request.method == "POST":
@@ -94,19 +96,21 @@ def login():
             session["user"] = username
             session["role"] = role
 
-            if role == "Doctor":
+            role = role.lower()
+
+            if role == "doctor":
                 return redirect("/doctor")
 
-            elif role == "Patient":
+            elif role == "patient":
                 return redirect("/patient")
 
-            elif role == "Research Analyst":
+            elif role in ["research analyst","research"]:
                 return redirect("/research")
-            
-            elif role == "Insurance Agent":
+
+            elif role in ["insurance agent","insurance"]:
                 return redirect("/insurance")
 
-            elif role == "Admin":
+            elif role == "admin":
                 return redirect("/admin")
 
         return render_template("login.html", error="Invalid Login Credentials")
@@ -114,9 +118,9 @@ def login():
     return render_template("login.html")
 
 
-# =====================================================
+# =================================
 # DOCTOR DASHBOARD
-# =====================================================
+# =================================
 
 @app.route("/doctor")
 def doctor():
@@ -127,11 +131,11 @@ def doctor():
     return render_template("doctor.html")
 
 
-# =====================================================
+# =================================
 # UPDATE TREATMENT
-# =====================================================
+# =================================
 
-@app.route("/update_treatment", methods=["GET", "POST"])
+@app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
 
     if "user" not in session:
@@ -171,9 +175,9 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# =====================================================
+# =================================
 # PATIENT DASHBOARD
-# =====================================================
+# =================================
 
 @app.route("/patient")
 def patient():
@@ -184,9 +188,9 @@ def patient():
     return render_template("patient.html")
 
 
-# =====================================================
-# RESEARCH ANALYST DASHBOARD
-# =====================================================
+# =================================
+# RESEARCH DASHBOARD
+# =================================
 
 @app.route("/research")
 def research():
@@ -197,9 +201,9 @@ def research():
     return render_template("research.html")
 
 
-# =====================================================
+# =================================
 # ANALYZE INFORMATION
-# =====================================================
+# =================================
 
 @app.route("/analyze_info")
 def analyze_info():
@@ -223,9 +227,9 @@ def analyze_info():
     return render_template("analyze_info.html", data=data)
 
 
-# =====================================================
+# =================================
 # GENERATE REPORTS
-# =====================================================
+# =================================
 
 @app.route("/generate_reports")
 def generate_reports():
@@ -249,7 +253,6 @@ def generate_reports():
     labels = list(disease_count.keys())
     values = list(disease_count.values())
 
-    # if no data exist
     if len(labels) == 0:
         labels = ["No Data"]
         values = [1]
@@ -261,11 +264,11 @@ def generate_reports():
     )
 
 
-# =====================================================
+# =================================
 # SUBMIT FINDINGS
-# =====================================================
+# =================================
 
-@app.route("/submit_findings", methods=["GET", "POST"])
+@app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
 
     if "user" not in session:
@@ -293,9 +296,9 @@ def submit_findings():
     return render_template("submit_findings.html")
 
 
-# =========================
+# =================================
 # INSURANCE DASHBOARD
-# =========================
+# =================================
 
 @app.route("/insurance")
 def insurance():
@@ -330,7 +333,7 @@ def receive_claim():
         patient = request.form["patient"]
         amount = request.form["amount"]
 
-        db.claims.insert_one({
+        claims_collection.insert_one({
             "claim_id": claim,
             "patient": patient,
             "amount": amount
@@ -344,7 +347,7 @@ def receive_claim():
 @app.route("/validate_claim")
 def validate_claim():
 
-    claims = list(db.claims.find())
+    claims = list(claims_collection.find())
 
     return render_template("validate_claim.html", claims=claims)
 
@@ -359,7 +362,7 @@ def approve_claim():
         claim = request.form["claim"]
         status = request.form["status"]
 
-        db.claims.update_one(
+        claims_collection.update_one(
             {"claim_id": claim},
             {"$set": {"status": status}}
         )
@@ -377,16 +380,17 @@ def update_payment():
         claim = request.form["claim"]
         payment = request.form["payment"]
 
-        db.claims.update_one(
+        claims_collection.update_one(
             {"claim_id": claim},
             {"$set": {"payment": payment}}
         )
 
     return render_template("update_payment.html")
 
-# =====================================================
+
+# =================================
 # ADMIN
-# =====================================================
+# =================================
 
 @app.route("/admin")
 def admin():
@@ -397,9 +401,9 @@ def admin():
     return render_template("admin.html")
 
 
-# =====================================================
+# =================================
 # LOGOUT
-# =====================================================
+# =================================
 
 @app.route("/logout")
 def logout():
@@ -409,9 +413,9 @@ def logout():
     return redirect("/")
 
 
-# =====================================================
+# =================================
 # RUN APP
-# =====================================================
+# =================================
 
 if __name__ == "__main__":
     app.run(debug=True)
