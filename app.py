@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 from datetime import datetime
 import hashlib
 import base64
+import os
 
 from database import add_user, find_user, load_blocks
 from blockchain import create_block, verify_chain
@@ -12,9 +13,9 @@ app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 
-# =================================
+# =====================================
 # MongoDB CONNECTION
-# =================================
+# =====================================
 
 client = MongoClient("mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority")
 
@@ -32,26 +33,26 @@ research_findings_collection = db["research_findings"]
 claims_collection = db["claims"]
 
 
-# =================================
+# =====================================
 # ENCRYPTION
-# =================================
+# =====================================
 
 encryption_key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(encryption_key)
 
 
-# =================================
+# =====================================
 # HOME
-# =================================
+# =====================================
 
 @app.route("/")
 def home():
     return render_template("login.html")
 
 
-# =================================
+# =====================================
 # REGISTER
-# =================================
+# =====================================
 
 @app.route("/register", methods=["GET","POST"])
 def register():
@@ -76,9 +77,9 @@ def register():
     return render_template("register.html")
 
 
-# =================================
+# =====================================
 # LOGIN
-# =================================
+# =====================================
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -104,10 +105,10 @@ def login():
             elif role == "patient":
                 return redirect("/patient")
 
-            elif role in ["research analyst","research"]:
+            elif role in ["research analyst", "research"]:
                 return redirect("/research")
 
-            elif role in ["insurance company","insurance"]:
+            elif role in ["insurance agent", "insurance"]:
                 return redirect("/insurance")
 
             elif role == "admin":
@@ -118,9 +119,9 @@ def login():
     return render_template("login.html")
 
 
-# =================================
+# =====================================
 # DOCTOR DASHBOARD
-# =================================
+# =====================================
 
 @app.route("/doctor")
 def doctor():
@@ -131,9 +132,9 @@ def doctor():
     return render_template("doctor.html")
 
 
-# =================================
+# =====================================
 # UPDATE TREATMENT
-# =================================
+# =====================================
 
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
@@ -175,9 +176,9 @@ def update_treatment():
     return render_template("update_treatment.html")
 
 
-# =================================
+# =====================================
 # PATIENT DASHBOARD
-# =================================
+# =====================================
 
 @app.route("/patient")
 def patient():
@@ -188,9 +189,9 @@ def patient():
     return render_template("patient.html")
 
 
-# =================================
-# RESEARCH DASHBOARD
-# =================================
+# =====================================
+# RESEARCH ANALYST DASHBOARD
+# =====================================
 
 @app.route("/research")
 def research():
@@ -201,9 +202,9 @@ def research():
     return render_template("research.html")
 
 
-# =================================
+# =====================================
 # ANALYZE INFORMATION
-# =================================
+# =====================================
 
 @app.route("/analyze_info")
 def analyze_info():
@@ -227,9 +228,9 @@ def analyze_info():
     return render_template("analyze_info.html", data=data)
 
 
-# =================================
+# =====================================
 # GENERATE REPORTS
-# =================================
+# =====================================
 
 @app.route("/generate_reports")
 def generate_reports():
@@ -264,9 +265,9 @@ def generate_reports():
     )
 
 
-# =================================
+# =====================================
 # SUBMIT FINDINGS
-# =================================
+# =====================================
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
@@ -296,9 +297,9 @@ def submit_findings():
     return render_template("submit_findings.html")
 
 
-# =================================
+# =====================================
 # INSURANCE DASHBOARD
-# =================================
+# =====================================
 
 @app.route("/insurance")
 def insurance():
@@ -388,9 +389,9 @@ def update_payment():
     return render_template("update_payment.html")
 
 
-# =================================
+# =====================================
 # ADMIN
-# =================================
+# =====================================
 
 @app.route("/admin")
 def admin():
@@ -401,9 +402,9 @@ def admin():
     return render_template("admin.html")
 
 
-# =================================
+# =====================================
 # LOGOUT
-# =================================
+# =====================================
 
 @app.route("/logout")
 def logout():
@@ -413,9 +414,12 @@ def logout():
     return redirect("/")
 
 
-# =================================
+# =====================================
 # RUN APP
-# =================================
+# =====================================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(host="0.0.0.0", port=port)
