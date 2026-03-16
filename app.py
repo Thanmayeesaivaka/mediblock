@@ -107,7 +107,7 @@ def login():
             elif role in ["research analyst","research"]:
                 return redirect("/research")
 
-            elif role in ["insurance agent","insurance"]:
+            elif role in ["insurance company","insurance"]:
                 return redirect("/insurance")
 
             elif role == "admin":
