@@ -7,7 +7,7 @@ font-family:Segoe UI;
 /* BACKGROUND */
 
 .research-bg{
-background: linear-gradient(135deg,#1e88e5,#ff9800);
+background: linear-gradient(135deg,#1187ee,#ff9800);
 min-height:100vh;
 }
 
@@ -67,14 +67,14 @@ margin-bottom:15px;
 
 .feature-card h3{
 
-color:#6a1b9a;
+color:#d06a10;
 
 }
 
 
 .feature-card a{
 
-background:#8e24aa;
+background:#d06a10;
 
 color:white;
 

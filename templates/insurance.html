@@ -1,51 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Insurance Verification</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<title>Insurance Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='insurance_style.css') }}">
+
 </head>
-<body>
 
-<div class="container">
+<body class="insurance-bg">
 
-<div class="nav">
-    <h2>Insurance Verification</h2>
-    <a href="/logout" class="logout">Logout</a>
+<h2 class="dashboard-title">Insurance Module</h2>
+
+<div class="card-container">
+
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/942/942748.png">
+<h3>Verify Policy</h3>
+<a href="/verify_policy">Open</a>
 </div>
 
-<div class="card">
-<h3>Record Authenticity:
-{% if valid %}
-<span class="valid">VERIFIED ✔</span>
-{% else %}
-<span class="invalid">REJECTED ❌ (Tampered)</span>
-{% endif %}
-</h3>
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png">
+<h3>Receive Claim</h3>
+<a href="/receive_claim">Open</a>
 </div>
 
-<div class="card">
-<table>
-<tr>
-<th>ID</th>
-<th>Patient</th>
-<th>Doctor</th>
-<th>Diagnosis</th>
-<th>Date</th>
-</tr>
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/190/190411.png">
+<h3>Validate Claim</h3>
+<a href="/validate_claim">Open</a>
+</div>
 
-{% for b in blocks %}
-<tr>
-<td>{{b.index}}</td>
-<td>{{b.patient}}</td>
-<td>{{b.doctor}}</td>
-<td>{{b.diagnosis}}</td>
-<td>{{b.timestamp}}</td>
-</tr>
-{% endfor %}
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png">
+<h3>Approve / Reject Claim</h3>
+<a href="/approve_claim">Open</a>
+</div>
 
-</table>
+<div class="feature-card">
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135679.png">
+<h3>Update Payment</h3>
+<a href="/update_payment">Open</a>
 </div>
 
 </div>
+
 </body>
 </html>

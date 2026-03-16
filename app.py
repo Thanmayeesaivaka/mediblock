@@ -102,6 +102,9 @@ def login():
 
             elif role == "Research Analyst":
                 return redirect("/research")
+            
+            elif role == "Insurance Agent":
+                return redirect("/insurance")
 
             elif role == "Admin":
                 return redirect("/admin")
@@ -289,6 +292,97 @@ def submit_findings():
 
     return render_template("submit_findings.html")
 
+
+# =========================
+# INSURANCE DASHBOARD
+# =========================
+
+@app.route("/insurance")
+def insurance():
+
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("insurance.html")
+
+
+# VERIFY POLICY
+
+@app.route("/verify_policy", methods=["GET","POST"])
+def verify_policy():
+
+    if request.method == "POST":
+
+        policy = request.form["policy"]
+        patient = request.form["patient"]
+
+    return render_template("verify_policy.html")
+
+
+# RECEIVE CLAIM
+
+@app.route("/receive_claim", methods=["GET","POST"])
+def receive_claim():
+
+    if request.method == "POST":
+
+        claim = request.form["claim"]
+        patient = request.form["patient"]
+        amount = request.form["amount"]
+
+        db.claims.insert_one({
+            "claim_id": claim,
+            "patient": patient,
+            "amount": amount
+        })
+
+    return render_template("receive_claim.html")
+
+
+# VALIDATE CLAIM
+
+@app.route("/validate_claim")
+def validate_claim():
+
+    claims = list(db.claims.find())
+
+    return render_template("validate_claim.html", claims=claims)
+
+
+# APPROVE CLAIM
+
+@app.route("/approve_claim", methods=["GET","POST"])
+def approve_claim():
+
+    if request.method == "POST":
+
+        claim = request.form["claim"]
+        status = request.form["status"]
+
+        db.claims.update_one(
+            {"claim_id": claim},
+            {"$set": {"status": status}}
+        )
+
+    return render_template("approve_claim.html")
+
+
+# UPDATE PAYMENT
+
+@app.route("/update_payment", methods=["GET","POST"])
+def update_payment():
+
+    if request.method == "POST":
+
+        claim = request.form["claim"]
+        payment = request.form["payment"]
+
+        db.claims.update_one(
+            {"claim_id": claim},
+            {"$set": {"payment": payment}}
+        )
+
+    return render_template("update_payment.html")
 
 # =====================================================
 # ADMIN

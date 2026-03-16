@@ -1,0 +1,25 @@
+<body class="insurance-bg">
+
+<h2 class="dashboard-title">Validate Claims</h2>
+
+<table>
+
+<tr>
+<th>Claim ID</th>
+<th>Patient</th>
+<th>Amount</th>
+</tr>
+
+{% for c in claims %}
+
+<tr>
+<td>{{c.claim_id}}</td>
+<td>{{c.patient}}</td>
+<td>{{c.amount}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>

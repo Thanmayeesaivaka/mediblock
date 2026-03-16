@@ -1,0 +1,170 @@
+body{
+margin:0;
+font-family:Segoe UI;
+}
+
+
+/* BACKGROUND SAME AS IMAGE */
+
+.insurance-bg{
+
+background: linear-gradient(135deg,#00ff00,#c8ff00,#ffb300);
+
+min-height:100vh;
+
+}
+
+
+/* TITLE */
+
+.dashboard-title{
+
+text-align:center;
+color:#004d00;
+padding-top:20px;
+
+}
+
+
+/* CARD GRID */
+
+.card-container{
+
+width:85%;
+margin:40px auto;
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+gap:30px;
+
+}
+
+
+/* CARDS */
+
+.feature-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:18px;
+
+text-align:center;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+transition:0.3s;
+
+}
+
+
+.feature-card img{
+
+width:80px;
+
+margin-bottom:15px;
+
+}
+
+
+.feature-card h3{
+
+color:#1b5e20;
+
+}
+
+
+.feature-card a{
+
+background:#ff9800;
+
+color:white;
+
+padding:8px 20px;
+
+border-radius:6px;
+
+text-decoration:none;
+
+}
+
+
+.feature-card:hover{
+
+transform:scale(1.05);
+
+}
+
+
+/* FORM */
+
+.form-box{
+
+width:40%;
+margin:auto;
+
+background:white;
+
+padding:30px;
+
+border-radius:12px;
+
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+
+}
+
+
+.form-box input, .form-box select{
+
+width:100%;
+
+padding:10px;
+
+margin:10px 0;
+
+}
+
+
+.form-box button{
+
+background:#ff9800;
+
+color:white;
+
+border:none;
+
+padding:10px;
+
+width:100%;
+
+border-radius:6px;
+
+}
+
+
+/* TABLE */
+
+table{
+
+width:80%;
+
+margin:auto;
+
+background:white;
+
+border-collapse:collapse;
+
+}
+
+table th, table td{
+
+border:1px solid #ccc;
+
+padding:10px;
+
+text-align:center;
+
+}
