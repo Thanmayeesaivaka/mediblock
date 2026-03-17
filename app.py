@@ -82,38 +82,41 @@ def register():
 # LOGIN
 # =====================================
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    try:
-        username = request.form["username"]
-        password = request.form["password"]
-        role = request.form["role"]
+    if request.method == "POST":
+        try:
+            username = request.form["username"]
+            password = request.form["password"]
+            role = request.form["role"]
 
-        user = find_user(username, password, role)
+            user = find_user(username, password, role)
 
-        if user:
-            session["user"] = username
-            session["role"] = role
+            if user:
+                session["user"] = username
+                session["role"] = role
 
-            role = role.lower()
+                role = role.lower()
 
-            if role == "doctor":
-                return redirect("/doctor")
-            elif role == "patient":
-                return redirect("/patient")
-            elif role in ["research", "research analyst"]:
-                return redirect("/research")
-            elif role in ["insurance", "insurance company"]:
-                return redirect("/insurance")
-            elif role == "admin":
-                return redirect("/admin")
+                if role == "doctor":
+                    return redirect("/doctor")
+                elif role == "patient":
+                    return redirect("/patient")
+                elif role in ["research", "research analyst"]:
+                    return redirect("/research")
+                elif role in ["insurance", "insurance company"]:
+                    return redirect("/insurance")
+                elif role == "admin":
+                    return redirect("/admin")
 
-        return render_template("login.html", error="Invalid Credentials")
+            return render_template("login.html", error="Invalid Credentials")
 
-    except Exception as e:
-        return f"Login Error: {e}"
+        except Exception as e:
+            return f"Login Error: {e}"
 
+    # ✅ THIS FIXES YOUR ERROR
+    return render_template("login.html")
 
 # =====================================
 # DOCTOR MODULE
