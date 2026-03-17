@@ -48,7 +48,7 @@ cipher = Fernet(key)
 
 @app.route("/")
 def home():
-    return render_template("login.html")
+    return render_template("main_home.html")
 
 
 # =====================================
