@@ -330,6 +330,24 @@ def approve_claim():
         )
     return render_template("approve_claim.html")
 
+@app.route("/verify_policy", methods=["GET","POST"])
+def verify_policy():
+
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+
+        policy = request.form["policy"]
+        patient = request.form["patient"]
+
+        # Optional logic
+        return render_template(
+            "verify_policy.html",
+            message="Policy Verified Successfully"
+        )
+
+    return render_template("verify_policy.html")
 
 @app.route("/update_payment", methods=["GET","POST"])
 def update_payment():
