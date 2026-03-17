@@ -4,34 +4,33 @@ from cryptography.fernet import Fernet
 from datetime import datetime
 import hashlib
 import base64
+import os
 
-from database import add_user, find_user
+from database import add_user, find_user, load_blocks
+from blockchain import create_block, verify_chain
 
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 
 # =====================================
-# SAFE MongoDB CONNECTION (IMPORTANT)
+# MongoDB CONNECTION
 # =====================================
 
-try:
-    client = MongoClient(
-        "mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority",
-        serverSelectionTimeoutMS=5000
-    )
-    db = client["mediblock"]
+client = MongoClient("mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority")
 
-    reports_collection = db["reports"]
-    treatments_collection = db["treatments"]
-    claims_collection = db["claims"]
-    research_findings_collection = db["research_findings"]
+db = client["mediblock"]
 
-    print("MongoDB Connected ✅")
+patients_collection = db["patients"]
+reports_collection = db["reports"]
+treatments_collection = db["treatments"]
+shared_collection = db["shared_data"]
+appointments_collection = db["appointments"]
 
-except Exception as e:
-    print("MongoDB ERROR ❌:", e)
-    db = None
+research_reports_collection = db["research_reports"]
+research_findings_collection = db["research_findings"]
+
+claims_collection = db["claims"]
 
 
 # =====================================
@@ -43,12 +42,12 @@ cipher = Fernet(encryption_key)
 
 
 # =====================================
-# HOME (SAFE)
+# HOME
 # =====================================
 
 @app.route("/")
 def home():
-    return render_template("main_home.html")
+    return render_template("login.html")
 
 
 # =====================================
@@ -72,13 +71,14 @@ def register():
         }
 
         add_user(user)
-        return redirect("/login")
+
+        return redirect("/")
 
     return render_template("register.html")
 
 
 # =====================================
-# LOGIN (FIXED)
+# LOGIN
 # =====================================
 
 @app.route("/login", methods=["GET","POST"])
@@ -95,38 +95,46 @@ def login():
         if user:
 
             session["user"] = username
-            session["role"] = role.lower()
+            session["role"] = role
 
-            if session["role"] == "doctor":
+            role = role.lower()
+
+            if role == "doctor":
                 return redirect("/doctor")
 
-            elif session["role"] == "patient":
+            elif role == "patient":
                 return redirect("/patient")
 
-            elif session["role"] in ["research analyst","research"]:
+            elif role in ["research analyst", "research"]:
                 return redirect("/research")
 
-            elif session["role"] in ["insurance company","insurance"]:
+            elif role in ["insurance company", "insurance"]:
                 return redirect("/insurance")
 
-            elif session["role"] == "admin":
+            elif role == "admin":
                 return redirect("/admin")
 
-        return render_template("login.html", error="Invalid Credentials")
+        return render_template("login.html", error="Invalid Login Credentials")
 
     return render_template("login.html")
 
 
 # =====================================
-# DOCTOR
+# DOCTOR DASHBOARD
 # =====================================
 
 @app.route("/doctor")
 def doctor():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("doctor.html")
 
+
+# =====================================
+# UPDATE TREATMENT
+# =====================================
 
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
@@ -136,45 +144,93 @@ def update_treatment():
 
     if request.method == "POST":
 
-        text = f"Diagnosis: {request.form['diagnosis']} | Prescription: {request.form['prescription']}"
+        patient_id = request.form["patient"]
+        diagnosis = request.form["diagnosis"]
+        prescription = request.form["prescription"]
 
-        encrypted = cipher.encrypt(text.encode())
+        treatment_text = f"Diagnosis: {diagnosis} | Prescription: {prescription}"
 
-        if db:
-            treatments_collection.insert_one({
-                "patient_id": request.form["patient"],
-                "doctor": session["user"],
-                "encrypted_treatment": base64.b64encode(encrypted).decode(),
-                "hash_key": hashlib.sha256(text.encode()).hexdigest(),
-                "date": datetime.now().strftime("%Y-%m-%d")
-            })
+        treatment_bytes = treatment_text.encode()
 
-        return render_template("update_treatment.html", message="Saved")
+        hash_key = hashlib.sha256(treatment_bytes).hexdigest()
+
+        encrypted_data = cipher.encrypt(treatment_bytes)
+
+        treatment_document = {
+
+            "patient_id": patient_id,
+            "doctor": session["user"],
+            "encrypted_treatment": base64.b64encode(encrypted_data).decode(),
+            "hash_key": hash_key,
+            "date": datetime.now().strftime("%Y-%m-%d")
+
+        }
+
+        treatments_collection.insert_one(treatment_document)
+
+        return render_template(
+            "update_treatment.html",
+            message="Treatment Stored Successfully"
+        )
 
     return render_template("update_treatment.html")
 
 
 # =====================================
-# PATIENT
+# PATIENT DASHBOARD
 # =====================================
 
 @app.route("/patient")
 def patient():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("patient.html")
 
 
 # =====================================
-# RESEARCH
+# RESEARCH ANALYST DASHBOARD
 # =====================================
 
 @app.route("/research")
 def research():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("research.html")
 
+
+# =====================================
+# ANALYZE INFORMATION
+# =====================================
+
+@app.route("/analyze_info")
+def analyze_info():
+
+    if "user" not in session:
+        return redirect("/")
+
+    reports = list(reports_collection.find())
+
+    data = []
+
+    for r in reports:
+
+        data.append({
+            "patient_id": r.get("patient_id"),
+            "report_name": r.get("report_name"),
+            "uploaded_by": r.get("uploaded_by"),
+            "hash": r.get("hash_key")
+        })
+
+    return render_template("analyze_info.html", data=data)
+
+
+# =====================================
+# GENERATE REPORTS
+# =====================================
 
 @app.route("/generate_reports")
 def generate_reports():
@@ -182,30 +238,36 @@ def generate_reports():
     if "user" not in session:
         return redirect("/")
 
-    labels = []
-    values = []
+    treatments = list(treatments_collection.find())
 
-    if db:
-        treatments = list(treatments_collection.find())
+    disease_count = {}
 
-        disease_count = {}
+    for t in treatments:
 
-        for t in treatments:
-            encrypted = base64.b64decode(t["encrypted_treatment"])
-            text = cipher.decrypt(encrypted).decode()
+        encrypted_data = base64.b64decode(t["encrypted_treatment"])
+        decrypted_data = cipher.decrypt(encrypted_data).decode()
 
-            disease = text.split("|")[0].replace("Diagnosis:", "").strip()
-            disease_count[disease] = disease_count.get(disease, 0) + 1
+        disease = decrypted_data.split("|")[0].replace("Diagnosis:", "").strip()
 
-        labels = list(disease_count.keys())
-        values = list(disease_count.values())
+        disease_count[disease] = disease_count.get(disease, 0) + 1
 
-    if not labels:
+    labels = list(disease_count.keys())
+    values = list(disease_count.values())
+
+    if len(labels) == 0:
         labels = ["No Data"]
         values = [1]
 
-    return render_template("generate_reports.html", labels=labels, values=values)
+    return render_template(
+        "generate_reports.html",
+        labels=labels,
+        values=values
+    )
 
+
+# =====================================
+# SUBMIT FINDINGS
+# =====================================
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
@@ -213,85 +275,115 @@ def submit_findings():
     if "user" not in session:
         return redirect("/")
 
-    if request.method == "POST" and db:
+    if request.method == "POST":
+
+        finding = request.form["finding"]
+        details = request.form["details"]
 
         research_findings_collection.insert_one({
-            "finding": request.form["finding"],
-            "details": request.form["details"],
-            "submitted_by": session["user"]
+
+            "finding": finding,
+            "details": details,
+            "submitted_by": session["user"],
+            "date": datetime.now().strftime("%Y-%m-%d")
+
         })
 
-        return render_template("submit_findings.html", message="Submitted")
+        return render_template(
+            "submit_findings.html",
+            message="Findings Submitted Successfully"
+        )
 
     return render_template("submit_findings.html")
 
 
 # =====================================
-# INSURANCE
+# INSURANCE DASHBOARD
 # =====================================
 
 @app.route("/insurance")
 def insurance():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("insurance.html")
 
+
+# VERIFY POLICY
+
+@app.route("/verify_policy", methods=["GET","POST"])
+def verify_policy():
+
+    if request.method == "POST":
+
+        policy = request.form["policy"]
+        patient = request.form["patient"]
+
+    return render_template("verify_policy.html")
+
+
+# RECEIVE CLAIM
 
 @app.route("/receive_claim", methods=["GET","POST"])
 def receive_claim():
 
-    if "user" not in session:
-        return redirect("/")
+    if request.method == "POST":
 
-    if request.method == "POST" and db:
+        claim = request.form["claim"]
+        patient = request.form["patient"]
+        amount = request.form["amount"]
 
         claims_collection.insert_one({
-            "claim_id": request.form["claim"],
-            "patient": request.form["patient"],
-            "amount": request.form["amount"],
-            "status": "Pending"
+            "claim_id": claim,
+            "patient": patient,
+            "amount": amount
         })
 
     return render_template("receive_claim.html")
 
 
+# VALIDATE CLAIM
+
 @app.route("/validate_claim")
 def validate_claim():
 
-    if "user" not in session:
-        return redirect("/")
+    claims = list(claims_collection.find())
 
-    claims = list(claims_collection.find()) if db else []
     return render_template("validate_claim.html", claims=claims)
 
+
+# APPROVE CLAIM
 
 @app.route("/approve_claim", methods=["GET","POST"])
 def approve_claim():
 
-    if "user" not in session:
-        return redirect("/")
+    if request.method == "POST":
 
-    if request.method == "POST" and db:
+        claim = request.form["claim"]
+        status = request.form["status"]
 
         claims_collection.update_one(
-            {"claim_id": request.form["claim"]},
-            {"$set": {"status": request.form["status"]}}
+            {"claim_id": claim},
+            {"$set": {"status": status}}
         )
 
     return render_template("approve_claim.html")
 
 
+# UPDATE PAYMENT
+
 @app.route("/update_payment", methods=["GET","POST"])
 def update_payment():
 
-    if "user" not in session:
-        return redirect("/")
+    if request.method == "POST":
 
-    if request.method == "POST" and db:
+        claim = request.form["claim"]
+        payment = request.form["payment"]
 
         claims_collection.update_one(
-            {"claim_id": request.form["claim"]},
-            {"$set": {"payment": request.form["payment"]}}
+            {"claim_id": claim},
+            {"$set": {"payment": payment}}
         )
 
     return render_template("update_payment.html")
@@ -303,8 +395,10 @@ def update_payment():
 
 @app.route("/admin")
 def admin():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("admin.html")
 
 
@@ -314,12 +408,14 @@ def admin():
 
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect("/")
 
 
 # =====================================
-# RUN
+# RUN APP
 # =====================================
 
 if __name__ == "__main__":
