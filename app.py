@@ -232,21 +232,81 @@ def grant_access():
 # =====================================
 # RESEARCH MODULE
 # =====================================
-
 @app.route("/research")
 def research():
+
     if "user" not in session:
         return redirect("/")
+
     return render_template("research.html")
 
 
-@app.route("/analyze")
-def analyze():
+# =====================================
+# ANALYZE INFORMATION
+# =====================================
+
+@app.route("/analyze_info")
+def analyze_info():
+
     if "user" not in session:
         return redirect("/")
-    data = list(reports.find().limit(20))
-    return render_template("analyze.html", data=data)
 
+    reports = list(reports_collection.find())
+
+    data = []
+
+    for r in reports:
+
+        data.append({
+            "patient_id": r.get("patient_id"),
+            "report_name": r.get("report_name"),
+            "uploaded_by": r.get("uploaded_by"),
+            "hash": r.get("hash_key")
+        })
+
+    return render_template("analyze_info.html", data=data)
+
+
+# =====================================
+# GENERATE REPORTS
+# =====================================
+
+@app.route("/generate_reports")
+def generate_reports():
+
+    if "user" not in session:
+        return redirect("/")
+
+    treatments = list(treatments_collection.find())
+
+    disease_count = {}
+
+    for t in treatments:
+
+        encrypted_data = base64.b64decode(t["encrypted_treatment"])
+        decrypted_data = cipher.decrypt(encrypted_data).decode()
+
+        disease = decrypted_data.split("|")[0].replace("Diagnosis:", "").strip()
+
+        disease_count[disease] = disease_count.get(disease, 0) + 1
+
+    labels = list(disease_count.keys())
+    values = list(disease_count.values())
+
+    if len(labels) == 0:
+        labels = ["No Data"]
+        values = [1]
+
+    return render_template(
+        "generate_reports.html",
+        labels=labels,
+        values=values
+    )
+
+
+# =====================================
+# SUBMIT FINDINGS
+# =====================================
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
@@ -255,11 +315,23 @@ def submit_findings():
         return redirect("/")
 
     if request.method == "POST":
-        findings.insert_one({
-            "finding": request.form["finding"],
-            "user": session["user"]
+
+        finding = request.form["finding"]
+        details = request.form["details"]
+
+        research_findings_collection.insert_one({
+
+            "finding": finding,
+            "details": details,
+            "submitted_by": session["user"],
+            "date": datetime.now().strftime("%Y-%m-%d")
+
         })
-        return render_template("submit_findings.html", message="Submitted")
+
+        return render_template(
+            "submit_findings.html",
+            message="Findings Submitted Successfully"
+        )
 
     return render_template("submit_findings.html")
 
@@ -268,47 +340,47 @@ def submit_findings():
 # INSURANCE MODULE
 # =====================================
 
+
 @app.route("/insurance")
 def insurance():
-    if "user" not in session:
-        return redirect("/")
     return render_template("insurance.html")
 
 
-@app.route("/claims", methods=["GET","POST"])
-def claims_func():
-
-    if "user" not in session:
-        return redirect("/")
-
+@app.route("/receive_claim", methods=["GET","POST"])
+def receive_claim():
     if request.method == "POST":
-        claims.insert_one({
+        claims_collection.insert_one({
+            "claim_id": request.form["claim"],
             "patient": request.form["patient"],
-            "amount": request.form["amount"],
-            "status": "Pending"
+            "amount": request.form["amount"]
         })
-        return render_template("claims.html", message="Claim Added")
-
-    data = list(claims.find().limit(20))
-    return render_template("claims.html", data=data)
+    return render_template("receive_claim.html")
 
 
-@app.route("/approve", methods=["POST"])
-def approve():
+@app.route("/validate_claim")
+def validate_claim():
+    claims = list(claims_collection.find())
+    return render_template("validate_claim.html", claims=claims)
 
-    if "user" not in session:
-        return redirect("/")
 
-    try:
-        claim_id = request.form["claim"]
-        claims.update_one(
-            {"_id": ObjectId(claim_id)},
-            {"$set": {"status": "Approved"}}
+@app.route("/approve_claim", methods=["GET","POST"])
+def approve_claim():
+    if request.method == "POST":
+        claims_collection.update_one(
+            {"claim_id": request.form["claim"]},
+            {"$set": {"status": request.form["status"]}}
         )
-        return "Approved"
-    except:
-        return "Error updating claim"
+    return render_template("approve_claim.html")
 
+
+@app.route("/update_payment", methods=["GET","POST"])
+def update_payment():
+    if request.method == "POST":
+        claims_collection.update_one(
+            {"claim_id": request.form["claim"]},
+            {"$set": {"payment": request.form["payment"]}}
+        )
+    return render_template("update_payment.html")
 
 # =====================================
 # ADMIN MODULE
