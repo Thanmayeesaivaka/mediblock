@@ -125,6 +125,12 @@ def doctor():
         return redirect("/")
     return render_template("doctor.html")
 
+@app.route("/treatment_history")
+def treatment_history():
+    if "user" not in session:
+        return redirect("/")
+    data = list(treatments_collection.find().limit(20))
+    return render_template("view_records.html", data=data)
 
 @app.route("/view_records")
 def view_records():
@@ -204,11 +210,19 @@ def patient():
     return render_template("patient.html")
 
 
-@app.route("/history")
-def history():
+@app.route("/medical_history")
+def medical_history():
     if "user" not in session:
         return redirect("/")
-    data = list(treatments_collection.find({"patient": session["user"]}).limit(20))
+    data = list(treatments_collection.find({"patient": session["user"]}))
+    return render_template("history.html", data=data)
+
+
+@app.route("/track_treatment")
+def track_treatment():
+    if "user" not in session:
+        return redirect("/")
+    data = list(treatments_collection.find({"patient": session["user"]}))
     return render_template("history.html", data=data)
 
 
@@ -345,6 +359,13 @@ def approve_claim():
         )
 
     return render_template("approve_claim.html")
+@app.route("/verify_policy", methods=["GET","POST"])
+def verify_policy():
+    if "user" not in session:
+        return redirect("/")
+    if request.method == "POST":
+        return render_template("verify_policy.html", message="Policy Verified Successfully")
+    return render_template("verify_policy.html")
 
 
 @app.route("/update_payment", methods=["GET","POST"])
