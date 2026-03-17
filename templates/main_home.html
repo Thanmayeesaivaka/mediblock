@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>MediBlock - Secure Healthcare System</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='main_style.css') }}">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<h2>MediBlock</h2>
+
+<button onclick="goLogin()">Login</button>
+
+</div>
+
+
+<!-- HERO SECTION -->
+
+<div class="hero">
+
+<h1>Secure Healthcare with Blockchain</h1>
+
+<p>
+MediBlock is a secure healthcare management system that ensures
+safe storage, sharing, and analysis of medical records using encryption and blockchain.
+</p>
+
+<button class="cta-btn" onclick="goLogin()">Get Started</button>
+
+</div>
+
+
+<!-- FEATURES -->
+
+<div class="features">
+
+<div class="card">
+<h3>🔒 Secure Data</h3>
+<p>Encrypted medical records with blockchain verification.</p>
+</div>
+
+<div class="card">
+<h3>👨‍⚕️ Multi Modules</h3>
+<p>Doctor, Patient, Research, Insurance & Admin access.</p>
+</div>
+
+<div class="card">
+<h3>📊 Smart Analytics</h3>
+<p>Research module with charts and medical insights.</p>
+</div>
+
+</div>
+
+
+<!-- ABOUT -->
+
+<div class="about">
+
+<h2>About MediBlock</h2>
+
+<p>
+MediBlock is a web-based healthcare system designed to manage patient data securely.
+It integrates encryption and blockchain to prevent data tampering and ensures
+authorized access across multiple roles like doctors, patients, and insurance agents.
+</p>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<div class="footer">
+<p>© 2026 MediBlock | Secure Healthcare Platform</p>
+</div>
+
+
+<script>
+
+function goLogin(){
+    window.location.href = "/login";
+}
+
+</script>
+
+</body>
+</html>

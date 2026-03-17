@@ -1,0 +1,159 @@
+body{
+margin:0;
+font-family:Segoe UI;
+color:white;
+background: linear-gradient(135deg,#1e3c72,#2a5298,#ff7e5f);
+}
+
+/* NAVBAR */
+
+.navbar{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:20px 50px;
+
+background: rgba(255,255,255,0.1);
+backdrop-filter: blur(10px);
+
+}
+
+.navbar h2{
+margin:0;
+}
+
+.navbar button{
+
+background:#ff9800;
+border:none;
+padding:10px 20px;
+border-radius:20px;
+color:white;
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.navbar button:hover{
+transform:scale(1.1);
+}
+
+
+/* HERO */
+
+.hero{
+
+text-align:center;
+padding:100px 20px;
+
+animation: fadeIn 2s;
+
+}
+
+.hero h1{
+font-size:40px;
+}
+
+.hero p{
+width:60%;
+margin:auto;
+margin-top:15px;
+}
+
+.cta-btn{
+
+margin-top:20px;
+
+background:#00c6ff;
+border:none;
+
+padding:12px 30px;
+
+border-radius:25px;
+
+color:white;
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.cta-btn:hover{
+transform:scale(1.1);
+}
+
+
+/* FEATURES */
+
+.features{
+
+display:flex;
+justify-content:center;
+
+gap:30px;
+
+margin:50px;
+
+}
+
+.card{
+
+background: rgba(255,255,255,0.15);
+
+padding:30px;
+
+border-radius:20px;
+
+width:250px;
+
+text-align:center;
+
+backdrop-filter: blur(10px);
+
+transition:0.3s;
+
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.05);
+}
+
+
+/* ABOUT */
+
+.about{
+
+text-align:center;
+padding:60px;
+
+background: rgba(0,0,0,0.2);
+
+}
+
+.about p{
+width:60%;
+margin:auto;
+}
+
+
+/* FOOTER */
+
+.footer{
+
+text-align:center;
+padding:20px;
+
+background: rgba(0,0,0,0.3);
+
+}
+
+
+/* ANIMATION */
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}

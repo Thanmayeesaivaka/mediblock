@@ -47,7 +47,7 @@ cipher = Fernet(encryption_key)
 
 @app.route("/")
 def home():
-    return render_template("login.html")
+    return render_template("main_home.html")
 
 
 # =====================================
@@ -297,97 +297,48 @@ def submit_findings():
     return render_template("submit_findings.html")
 
 
-# =====================================
-# INSURANCE DASHBOARD
-# =====================================
+claims_collection = db["claims"]
 
 @app.route("/insurance")
 def insurance():
-
-    if "user" not in session:
-        return redirect("/")
-
     return render_template("insurance.html")
 
 
-# VERIFY POLICY
-
-@app.route("/verify_policy", methods=["GET","POST"])
-def verify_policy():
-
-    if request.method == "POST":
-
-        policy = request.form["policy"]
-        patient = request.form["patient"]
-
-    return render_template("verify_policy.html")
-
-
-# RECEIVE CLAIM
-
 @app.route("/receive_claim", methods=["GET","POST"])
 def receive_claim():
-
     if request.method == "POST":
-
-        claim = request.form["claim"]
-        patient = request.form["patient"]
-        amount = request.form["amount"]
-
         claims_collection.insert_one({
-            "claim_id": claim,
-            "patient": patient,
-            "amount": amount
+            "claim_id": request.form["claim"],
+            "patient": request.form["patient"],
+            "amount": request.form["amount"]
         })
-
     return render_template("receive_claim.html")
 
 
-# VALIDATE CLAIM
-
 @app.route("/validate_claim")
 def validate_claim():
-
     claims = list(claims_collection.find())
-
     return render_template("validate_claim.html", claims=claims)
 
 
-# APPROVE CLAIM
-
 @app.route("/approve_claim", methods=["GET","POST"])
 def approve_claim():
-
     if request.method == "POST":
-
-        claim = request.form["claim"]
-        status = request.form["status"]
-
         claims_collection.update_one(
-            {"claim_id": claim},
-            {"$set": {"status": status}}
+            {"claim_id": request.form["claim"]},
+            {"$set": {"status": request.form["status"]}}
         )
-
     return render_template("approve_claim.html")
 
 
-# UPDATE PAYMENT
-
 @app.route("/update_payment", methods=["GET","POST"])
 def update_payment():
-
     if request.method == "POST":
-
-        claim = request.form["claim"]
-        payment = request.form["payment"]
-
         claims_collection.update_one(
-            {"claim_id": claim},
-            {"$set": {"payment": payment}}
+            {"claim_id": request.form["claim"]},
+            {"$set": {"payment": request.form["payment"]}}
         )
-
     return render_template("update_payment.html")
-
 
 # =====================================
 # ADMIN
