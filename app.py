@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, session
 from pymongo import MongoClient
 from cryptography.fernet import Fernet
 from datetime import datetime
-import hashlib
+from bson import ObjectId
 import base64
 import os
 
@@ -12,12 +12,12 @@ app = Flask(__name__)
 app.secret_key = "mediblock_secret"
 
 # =====================================
-# MongoDB CONNECTION
+# MongoDB CONNECTION (SAFE)
 # =====================================
 
 MONGO_URI = "mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
 
-client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
 db = client["mediblock"]
 
 patients = db["patients"]
@@ -27,12 +27,21 @@ shared = db["shared"]
 claims = db["claims"]
 findings = db["findings"]
 
+# Test connection
+try:
+    client.server_info()
+    print("MongoDB Connected")
+except:
+    print("MongoDB Connection Failed")
+
+
 # =====================================
 # ENCRYPTION
 # =====================================
 
 key = b'V2V1S0RjSndhT3R0d2FvV0t5QmZzQnFvTnNnQ1Z4bU8='
 cipher = Fernet(key)
+
 
 # =====================================
 # HOME
@@ -42,12 +51,14 @@ cipher = Fernet(key)
 def home():
     return render_template("login.html")
 
+
 # =====================================
 # REGISTER
 # =====================================
 
 @app.route("/register", methods=["GET","POST"])
 def register():
+
     if request.method == "POST":
         try:
             user = {
@@ -63,9 +74,10 @@ def register():
             add_user(user)
             return redirect("/")
         except Exception as e:
-            return str(e)
+            return f"Error: {e}"
 
     return render_template("register.html")
+
 
 # =====================================
 # LOGIN
@@ -73,6 +85,7 @@ def register():
 
 @app.route("/login", methods=["POST"])
 def login():
+
     try:
         username = request.form["username"]
         password = request.form["password"]
@@ -90,9 +103,9 @@ def login():
                 return redirect("/doctor")
             elif role == "patient":
                 return redirect("/patient")
-            elif role == "research":
+            elif role in ["research", "research analyst"]:
                 return redirect("/research")
-            elif role == "insurance":
+            elif role in ["insurance", "insurance company"]:
                 return redirect("/insurance")
             elif role == "admin":
                 return redirect("/admin")
@@ -100,7 +113,8 @@ def login():
         return render_template("login.html", error="Invalid Credentials")
 
     except Exception as e:
-        return str(e)
+        return f"Login Error: {e}"
+
 
 # =====================================
 # DOCTOR MODULE
@@ -112,66 +126,73 @@ def doctor():
         return redirect("/")
     return render_template("doctor.html")
 
-# View patient records
+
 @app.route("/view_records")
 def view_records():
-    data = list(treatments.find())
+    if "user" not in session:
+        return redirect("/")
+    data = list(treatments.find().limit(20))
     return render_template("view_records.html", data=data)
 
-# Update treatment
+
 @app.route("/update_treatment", methods=["GET","POST"])
 def update_treatment():
+
+    if "user" not in session:
+        return redirect("/")
+
     if request.method == "POST":
-        patient = request.form["patient"]
-        diagnosis = request.form["diagnosis"]
-        prescription = request.form["prescription"]
+        try:
+            text = f"Diagnosis:{request.form['diagnosis']}|Prescription:{request.form['prescription']}"
+            enc = cipher.encrypt(text.encode())
 
-        text = f"Diagnosis:{diagnosis}|Prescription:{prescription}"
-        enc = cipher.encrypt(text.encode())
+            treatments.insert_one({
+                "patient": request.form["patient"],
+                "doctor": session["user"],
+                "data": base64.b64encode(enc).decode(),
+                "date": datetime.now()
+            })
 
-        treatments.insert_one({
-            "patient": patient,
-            "doctor": session["user"],
-            "data": base64.b64encode(enc).decode(),
-            "date": datetime.now()
-        })
+            return render_template("update_treatment.html", message="Updated Successfully")
 
-        return "Updated Successfully"
+        except Exception as e:
+            return f"Error: {e}"
 
     return render_template("update_treatment.html")
 
-# Upload report
+
 @app.route("/upload_report", methods=["GET","POST"])
 def upload_report():
-    if request.method == "POST":
-        patient = request.form["patient"]
-        report_name = request.form["report"]
 
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
         reports.insert_one({
-            "patient": patient,
-            "report": report_name,
+            "patient": request.form["patient"],
+            "report": request.form["report"],
             "doctor": session["user"]
         })
-
-        return "Uploaded"
+        return render_template("upload_report.html", message="Uploaded")
 
     return render_template("upload_report.html")
 
-# Share data
+
 @app.route("/share_data", methods=["GET","POST"])
 def share_data():
+
+    if "user" not in session:
+        return redirect("/")
+
     if request.method == "POST":
-        patient = request.form["patient"]
-        to = request.form["to"]
-
         shared.insert_one({
-            "patient": patient,
-            "shared_to": to
+            "patient": request.form["patient"],
+            "shared_to": request.form["to"]
         })
-
-        return "Shared"
+        return render_template("share_data.html", message="Shared")
 
     return render_template("share_data.html")
+
 
 # =====================================
 # PATIENT MODULE
@@ -179,28 +200,34 @@ def share_data():
 
 @app.route("/patient")
 def patient():
+    if "user" not in session:
+        return redirect("/")
     return render_template("patient.html")
 
-# View history
+
 @app.route("/history")
 def history():
-    data = list(treatments.find({"patient": session["user"]}))
+    if "user" not in session:
+        return redirect("/")
+    data = list(treatments.find({"patient": session["user"]}).limit(20))
     return render_template("history.html", data=data)
 
-# Grant access
+
 @app.route("/grant_access", methods=["GET","POST"])
 def grant_access():
-    if request.method == "POST":
-        doctor = request.form["doctor"]
 
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
         shared.insert_one({
             "patient": session["user"],
-            "doctor": doctor
+            "doctor": request.form["doctor"]
         })
-
-        return "Access Granted"
+        return render_template("grant_access.html", message="Access Granted")
 
     return render_template("grant_access.html")
+
 
 # =====================================
 # RESEARCH MODULE
@@ -208,26 +235,34 @@ def grant_access():
 
 @app.route("/research")
 def research():
+    if "user" not in session:
+        return redirect("/")
     return render_template("research.html")
+
 
 @app.route("/analyze")
 def analyze():
-    data = list(reports.find())
+    if "user" not in session:
+        return redirect("/")
+    data = list(reports.find().limit(20))
     return render_template("analyze.html", data=data)
+
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
-    if request.method == "POST":
-        f = request.form["finding"]
 
+    if "user" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
         findings.insert_one({
-            "finding": f,
+            "finding": request.form["finding"],
             "user": session["user"]
         })
-
-        return "Submitted"
+        return render_template("submit_findings.html", message="Submitted")
 
     return render_template("submit_findings.html")
+
 
 # =====================================
 # INSURANCE MODULE
@@ -235,24 +270,45 @@ def submit_findings():
 
 @app.route("/insurance")
 def insurance():
+    if "user" not in session:
+        return redirect("/")
     return render_template("insurance.html")
+
 
 @app.route("/claims", methods=["GET","POST"])
 def claims_func():
+
+    if "user" not in session:
+        return redirect("/")
+
     if request.method == "POST":
         claims.insert_one({
             "patient": request.form["patient"],
-            "amount": request.form["amount"]
+            "amount": request.form["amount"],
+            "status": "Pending"
         })
-        return "Claim Added"
+        return render_template("claims.html", message="Claim Added")
 
-    return render_template("claims.html")
+    data = list(claims.find().limit(20))
+    return render_template("claims.html", data=data)
+
 
 @app.route("/approve", methods=["POST"])
 def approve():
-    claim = request.form["claim"]
-    claims.update_one({"_id": claim}, {"$set": {"status": "approved"}})
-    return "Approved"
+
+    if "user" not in session:
+        return redirect("/")
+
+    try:
+        claim_id = request.form["claim"]
+        claims.update_one(
+            {"_id": ObjectId(claim_id)},
+            {"$set": {"status": "Approved"}}
+        )
+        return "Approved"
+    except:
+        return "Error updating claim"
+
 
 # =====================================
 # ADMIN MODULE
@@ -260,7 +316,10 @@ def approve():
 
 @app.route("/admin")
 def admin():
+    if "user" not in session:
+        return redirect("/")
     return render_template("admin.html")
+
 
 # =====================================
 # LOGOUT
@@ -271,10 +330,10 @@ def logout():
     session.clear()
     return redirect("/")
 
+
 # =====================================
-# RUN
+# RUN (LOCAL ONLY)
 # =====================================
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
