@@ -24,6 +24,7 @@
             </div>
         {% endif %}
 
+        <!-- ✅ FORM START -->
         <form method="POST" action="/login">
 
             <div class="input-group">
@@ -36,18 +37,22 @@
 
             <div class="input-group">
                 <select name="role" required>
-    <option value="">Select Role</option>
-    <option value="admin">Admin</option>
-    <option value="doctor">Doctor</option>
-    <option value="patient">Patient</option>
-    <option value="research analyst">Research Analyst</option>
-    <option value="insurance company">Insurance Company</option>
-</select>
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="patient">Patient</option>
+                    <option value="research analyst">Research Analyst</option>
+                    <option value="insurance company">Insurance Company</option>
+                </select>
             </div>
 
-            <button type="submit" class="login-btn">Login</button>
+            <!-- ✅ FIXED SUBMIT BUTTON -->
+            <div class="input-group">
+                <input type="submit" value="Login" class="login-btn">
+            </div>
 
         </form>
+        <!-- ✅ FORM END -->
 
         <p class="register-link">
             New user? <a href="/register">Create Account</a>
