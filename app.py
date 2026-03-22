@@ -138,24 +138,12 @@ def treatment_history():
     history = []
 
     for t in data:
-        try:
-            # decrypt
-            encrypted_data = base64.b64decode(t["data"])
-            decrypted = cipher.decrypt(encrypted_data).decode()
-
-            # create simple hash (blockchain concept)
-            import hashlib
-            hash_val = hashlib.sha256(decrypted.encode()).hexdigest()
-
-            history.append({
-                "patient": t["patient"],
-                "doctor": t["doctor"],
-                "decrypted": decrypted,
-                "hash": hash_val
-            })
-
-        except:
-            continue
+        history.append({
+            "patient": t.get("patient", ""),
+            "doctor": t.get("doctor", ""),
+            "treatment": t.get("data", ""),   # now plain text
+            "date": t.get("date", "")
+        })
 
     return render_template("treatment_history.html", history=history)
 
