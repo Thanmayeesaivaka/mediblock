@@ -9,21 +9,21 @@
 <style>
 
 table{
-width:80%;
-margin:auto;
-background:white;
-border-collapse:collapse;
+    width:80%;
+    margin:auto;
+    background:white;
+    border-collapse:collapse;
 }
 
 th,td{
-padding:12px;
-border:1px solid #333;
-text-align:center;
+    padding:12px;
+    border:1px solid #333;
+    text-align:center;
 }
 
 th{
-background:#1976d2;
-color:white;
+    background:#1976d2;
+    color:white;
 }
 
 </style>
@@ -32,41 +32,52 @@ color:white;
 
 <body class="staff-bg">
 
+<!-- TOP BAR -->
 <div class="topbar">
 
-<div class="logo">
-🏥 MediBlock
+    <div class="logo">
+        🏥 MediBlock
+    </div>
+
+    <div class="logout">
+        <a href="/doctor">Back</a>
+    </div>
+
 </div>
 
-<div class="logout">
-<a href="/doctor">Back</a>
-</div>
-
-</div>
-
+<!-- TITLE -->
 <h2 class="dashboard-title">Treatment History</h2>
 
+<!-- TABLE -->
 <table>
 
 <tr>
-<th>Patient ID</th>
-<th>Doctor</th>
-<th>Treatment Details</th>
-<th>Hash Key</th>
+    <th>Patient ID</th>
+    <th>Doctor</th>
+    <th>Treatment Details</th>
+    <th>Hash Key</th>
 </tr>
 
-{% for t in history %}
+{% if history %}
+
+    {% for t in history %}
+    <tr>
+        <td>{{ t.patient }}</td>
+        <td>{{ t.doctor }}</td>
+        <td>{{ t.decrypted }}</td>
+        <td style="font-size:10px; word-break:break-all;">
+            {{ t.hash }}
+        </td>
+    </tr>
+    {% endfor %}
+
+{% else %}
 
 <tr>
-
-<td>{{ t.patient_id }}</td>
-<td>{{ t.doctor }}</td>
-<td>{{ t.treatment }}</td>
-
-
+    <td colspan="4">No Treatment Records Found</td>
 </tr>
 
-{% endfor %}
+{% endif %}
 
 </table>
 
