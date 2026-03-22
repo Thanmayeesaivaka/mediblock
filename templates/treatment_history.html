@@ -51,33 +51,22 @@ th{
 <!-- TABLE -->
 <table>
 
+
 <tr>
     <th>Patient ID</th>
     <th>Doctor</th>
     <th>Treatment Details</th>
-    <th>Hash Key</th>
+    <th>Date</th>
 </tr>
 
-{% if history %}
-
-    {% for t in history %}
-    <tr>
-        <td>{{ t.patient }}</td>
-        <td>{{ t.doctor }}</td>
-        <td>{{ t.decrypted }}</td>
-        <td style="font-size:10px; word-break:break-all;">
-            {{ t.hash }}
-        </td>
-    </tr>
-    {% endfor %}
-
-{% else %}
-
+{% for t in history %}
 <tr>
-    <td colspan="4">No Treatment Records Found</td>
+    <td>{{ t.patient }}</td>
+    <td>{{ t.doctor }}</td>
+    <td>{{ t.treatment }}</td>
+    <td>{{ t.date }}</td>
 </tr>
-
-{% endif %}
+{% endfor %}
 
 </table>
 
