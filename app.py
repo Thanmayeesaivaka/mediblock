@@ -238,7 +238,10 @@ def medical_history():
         return redirect("/")
 
     history = list(reports_collection.find({
-        "patient_id": session["user"]   # ✅ FIXED
+        "patient_name": {
+            "$regex": f"^{session['user']}$",
+            "$options": "i"
+        }
     }))
 
     return render_template("medical_history.html", history=history)
