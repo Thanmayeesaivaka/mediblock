@@ -252,9 +252,11 @@ def track_treatment():
     if "user" not in session:
         return redirect("/")
 
-    history = list(treatments_collection.find({
-        "patient_name": session["user"]
-    }))
+    print("SESSION USER:", session["user"])
+
+    history = list(treatments_collection.find())
+
+    print("DATA FROM DB:", history)
 
     return render_template("track_treatment.html", history=history)
 
