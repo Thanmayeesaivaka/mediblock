@@ -25,12 +25,10 @@
 
 {% for row in data %}
 
-<tr>
-<td>{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2]}}</td>
-<td>{{row[3]}}</td>
-</tr>
+<td>{{ row.get('patient_id') }}</td>
+<td>{{ row.get('disease') }}</td>
+<td>{{ row.get('treatment') }}</td>
+<td>{{ row.get('date') }}</td>
 
 {% endfor %}
 

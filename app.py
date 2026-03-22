@@ -26,6 +26,7 @@ reports_collection = db["reports"]
 shared_collection = db["shared"]
 claims_collection = db["claims"]
 findings_collection = db["findings"]
+analysis_collection = db["analysis"]
 
 # Check connection
 try:
@@ -290,39 +291,35 @@ def research():
 
 @app.route("/analyze_info")
 def analyze_info():
-
     if "user" not in session:
         return redirect("/")
 
-    data = list(reports_collection.find().limit(20))
+    data = list(treatments_collection.find())
+
     return render_template("analyze_info.html", data=data)
 
 
 @app.route("/generate_reports")
 def generate_reports():
-
     if "user" not in session:
         return redirect("/")
 
-    treatments = list(treatments_collection.find().limit(50))
+    data = list(analysis_collection.find())
 
     disease_count = {}
 
-    for t in treatments:
-        try:
-            encrypted_data = base64.b64decode(t["data"])
-            decrypted_data = cipher.decrypt(encrypted_data).decode()
+    for d in data:
+        disease = d.get("disease")
 
-            disease = decrypted_data.split("|")[0].replace("Diagnosis:", "").strip()
+        if disease:
             disease_count[disease] = disease_count.get(disease, 0) + 1
-        except:
-            continue
 
-    labels = list(disease_count.keys()) or ["No Data"]
-    values = list(disease_count.values()) or [1]
+    labels = list(disease_count.keys())
+    values = list(disease_count.values())
 
-    return render_template("generate_reports.html", labels=labels, values=values)
-
+    return render_template("generate_reports.html",
+                           labels=labels,
+                           values=values)
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():
