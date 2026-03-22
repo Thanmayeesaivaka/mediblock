@@ -294,28 +294,27 @@ def analyze_info():
     if "user" not in session:
         return redirect("/")
 
-    data = list(treatments_collection.find())
+    data = list(analysis_collection.find())
 
     return render_template("analyze_info.html", data=data)
 
 
 @app.route("/generate_reports")
 def generate_reports():
-    if "user" not in session:
-        return redirect("/")
 
-    data = list(treatments_collection.find())
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$disease",
+                "count": {"$sum": 1}
+            }
+        }
+    ]
 
-    disease_count = {}
+    data = list(treatments_collection.aggregate(pipeline))
 
-    for d in data:
-        disease = d.get("disease")   # ✅ CHANGE HERE
-
-        if disease:
-            disease_count[disease] = disease_count.get(disease, 0) + 1
-
-    labels = list(disease_count.keys())
-    values = list(disease_count.values())
+    labels = [d["_id"] for d in data if d["_id"]]
+    values = [d["count"] for d in data if d["_id"]]
 
     return render_template(
         "generate_reports.html",

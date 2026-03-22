@@ -1,89 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Medical Reports</title>
+<title>Medical Data Analysis</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='research_style.css') }}">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-body{
-margin:0;
-font-family:Segoe UI;
-background:linear-gradient(135deg,#1e88e5,#ff9800);
-}
-
-/* TOPBAR */
-.topbar{
-display:flex;
-justify-content:space-between;
-padding:15px 30px;
-color:white;
-background:rgba(0,0,0,0.2);
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-}
-
-.logout a{
-color:white;
-text-decoration:none;
-}
-
-/* CARD */
-.container{
-width:70%;
-margin:auto;
-margin-top:40px;
+/* CONTAINER */
+.chart-container{
+width:85%;
+margin:40px auto;
 background:white;
-padding:25px;
-border-radius:12px;
+padding:30px;
+border-radius:15px;
 box-shadow:0 10px 25px rgba(0,0,0,0.2);
-text-align:center;
 }
 
 /* TITLE */
-h2{
-color:#0d47a1;
-margin-bottom:20px;
+.chart-title{
+text-align:center;
+color:#1a237e;
+margin-bottom:30px;
 }
 
-/* SMALL CHARTS */
-.chart-wrapper{
+/* GRID */
+.chart-grid{
 display:flex;
-justify-content:space-around;
+justify-content:center;
+gap:40px;
 flex-wrap:wrap;
 }
 
+/* EACH CHART BOX */
 .chart-box{
-width:300px;   /* 🔥 SMALL SIZE */
-height:300px;
-margin:20px;
+width:280px;   /* ✅ SMALL SIZE */
+height:280px;
+}
+
+/* CANVAS CONTROL */
+canvas{
+width:100% !important;
+height:100% !important;
 }
 
 </style>
+
 </head>
 
-<body>
+<body class="research-bg">
 
-<div class="topbar">
-<div class="logo">📊 MediBlock</div>
-<div class="logout"><a href="/research_home">Back</a></div>
-</div>
+<div class="chart-container">
 
-<div class="container">
+<h2 class="chart-title">Medical Data Analysis</h2>
 
-<h2>Medical Data Analysis (Disease Based)</h2>
+<div class="chart-grid">
 
-<div class="chart-wrapper">
-
+<!-- PIE -->
 <div class="chart-box">
 <canvas id="pieChart"></canvas>
 </div>
 
+<!-- BAR -->
 <div class="chart-box">
 <canvas id="barChart"></canvas>
+</div>
+
+<!-- DOUGHNUT -->
+<div class="chart-box">
+<canvas id="doughnutChart"></canvas>
 </div>
 
 </div>
@@ -92,46 +79,54 @@ margin:20px;
 
 <script>
 
-var labels = JSON.parse('{{ labels | tojson }}');
-var values = JSON.parse('{{ values | tojson }}');
+var labels = {{ labels | default([]) | tojson | safe }};
+var values = {{ values | default([]) | tojson | safe }};
 
-/* PIE */
+/* COLORS */
+var colors = ["#ff9800","#42a5f5","#66bb6a","#ef5350","#ab47bc"];
+
+/* PIE CHART */
 new Chart(document.getElementById("pieChart"),{
 type:"pie",
 data:{
 labels:labels,
 datasets:[{
 data:values,
-backgroundColor:[
-"#ff9800",
-"#42a5f5",
-"#66bb6a",
-"#ef5350",
-"#ab47bc"
-]
+backgroundColor:colors
 }]
 }
 });
 
-/* BAR */
+/* BAR CHART */
 new Chart(document.getElementById("barChart"),{
 type:"bar",
 data:{
 labels:labels,
 datasets:[{
-label:"Cases",
+label:"Disease Count",
 data:values,
-backgroundColor:"#42a5f5"
+backgroundColor:colors
 }]
 },
 options:{
-responsive:true,
-maintainAspectRatio:false,   /* 🔥 important for small size */
+plugins:{
+legend:{display:false}
+},
 scales:{
-y:{
-beginAtZero:true
+y:{beginAtZero:true}
 }
 }
+});
+
+/* DOUGHNUT */
+new Chart(document.getElementById("doughnutChart"),{
+type:"doughnut",
+data:{
+labels:labels,
+datasets:[{
+data:values,
+backgroundColor:colors
+}]
 }
 });
 
