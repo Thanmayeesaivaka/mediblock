@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 from datetime import datetime
 import base64
 import hashlib
+import os
 
 app = Flask(__name__)
 app.secret_key = "mediblock_secret"
@@ -11,8 +12,9 @@ app.secret_key = "mediblock_secret"
 # ===============================
 # MongoDB Connection
 # ===============================
-MONGO_URI = "your_mongodb_uri_here"
-client = MongoClient(MONGO_URI)
+MONGO_URI = "mongodb+srv://mediblock:mediblock123@cluster0.mvjq5vy.mongodb.net/mediblock?retryWrites=true&w=majority"
+
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
 db = client["mediblock"]
 
 patients_collection = db["patients"]
@@ -33,39 +35,45 @@ cipher = Fernet(key)
 def home():
     return render_template("main_home.html")
 
-
 # ===============================
-# LOGIN (Simple for testing)
+# LOGIN (FIXED)
 # ===============================
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        session["user"] = request.form["username"]
-        session["role"] = request.form["role"]
 
-        role = session["role"]
+        username = request.form["username"]
+        role = request.form["role"].strip().lower()   # ✅ FIX
+
+        session["user"] = username
+        session["role"] = role
 
         if role == "doctor":
             return redirect("/doctor")
         elif role == "patient":
             return redirect("/patient")
-        elif role == "research":
+        elif role in ["research", "research analyst"]:
             return redirect("/research")
 
-    return render_template("login.html")
+        return "Invalid Role"
 
+    return render_template("login.html")
 
 # ===============================
 # DOCTOR MODULE
 # ===============================
 @app.route("/doctor")
 def doctor():
+    if "user" not in session:
+        return redirect("/")
     return render_template("doctor.html")
 
-
-# 🔹 Add Treatment (ENCRYPTED)
+# 🔹 Add Treatment
 @app.route("/update_treatment", methods=["GET", "POST"])
 def update_treatment():
+    if "user" not in session:
+        return redirect("/")
+
     if request.method == "POST":
 
         text = f"Diagnosis:{request.form['diagnosis']}|Prescription:{request.form['prescription']}"
@@ -78,14 +86,15 @@ def update_treatment():
             "date": datetime.now().strftime("%Y-%m-%d")
         })
 
-        return "Treatment Added"
+        return render_template("update_treatment.html", message="Added Successfully")
 
     return render_template("update_treatment.html")
 
-
-# 🔹 Doctor View Treatment History
+# 🔹 Treatment History (Doctor)
 @app.route("/treatment_history")
 def treatment_history():
+    if "user" not in session:
+        return redirect("/")
 
     data = list(treatments_collection.find())
 
@@ -110,18 +119,20 @@ def treatment_history():
 
     return render_template("treatment_history.html", history=history)
 
-
 # ===============================
 # PATIENT MODULE
 # ===============================
 @app.route("/patient")
 def patient():
+    if "user" not in session:
+        return redirect("/")
     return render_template("patient.html")
-
 
 # 🔹 Medical History (Reports)
 @app.route("/medical_history")
 def medical_history():
+    if "user" not in session:
+        return redirect("/")
 
     history = list(reports_collection.find({
         "patient": session["user"]
@@ -129,10 +140,11 @@ def medical_history():
 
     return render_template("medical_history.html", history=history)
 
-
 # 🔹 Track Treatment (DECRYPT + HASH)
 @app.route("/track_treatment")
 def track_treatment():
+    if "user" not in session:
+        return redirect("/")
 
     data = list(treatments_collection.find({
         "patient": session["user"]
@@ -159,27 +171,30 @@ def track_treatment():
 
     return render_template("track_treatment.html", history=history)
 
-
 # ===============================
 # RESEARCH MODULE
 # ===============================
 @app.route("/research")
 def research():
+    if "user" not in session:
+        return redirect("/")
     return render_template("research.html")
-
 
 # 🔹 Analyze Info
 @app.route("/analyze_info")
 def analyze_info():
+    if "user" not in session:
+        return redirect("/")
 
     data = list(findings_collection.find())
 
     return render_template("analyze_info.html", data=data)
 
-
 # 🔹 Generate Reports (Charts)
 @app.route("/generate_reports")
 def generate_reports():
+    if "user" not in session:
+        return redirect("/")
 
     treatments = list(treatments_collection.find())
 
@@ -202,7 +217,6 @@ def generate_reports():
 
     return render_template("generate_reports.html", labels=labels, values=values)
 
-
 # ===============================
 # LOGOUT
 # ===============================
@@ -211,9 +225,9 @@ def logout():
     session.clear()
     return redirect("/")
 
-
 # ===============================
 # RUN
 # ===============================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
