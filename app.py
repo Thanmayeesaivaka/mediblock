@@ -157,7 +157,7 @@ def treatment_history():
         except:
             continue
 
-    return render_template("your_html_file.html", history=history)
+    return render_template("treatment_history.html", history=history)
 
 @app.route("/view_records")
 def view_records():
