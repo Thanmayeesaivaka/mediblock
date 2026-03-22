@@ -309,7 +309,7 @@ def generate_reports():
     disease_count = {}
 
     for d in data:
-        disease = d.get("disease")
+        disease = d.get("treatment")  # or "disease" if you have that field
 
         if disease:
             disease_count[disease] = disease_count.get(disease, 0) + 1
@@ -317,9 +317,11 @@ def generate_reports():
     labels = list(disease_count.keys())
     values = list(disease_count.values())
 
-    return render_template("generate_reports.html",
-                           labels=labels,
-                           values=values)
+    return render_template(
+        "generate_reports.html",
+        labels=labels,
+        values=values
+    )
 
 @app.route("/submit_findings", methods=["GET","POST"])
 def submit_findings():

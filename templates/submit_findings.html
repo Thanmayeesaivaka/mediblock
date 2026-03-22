@@ -8,21 +8,19 @@
 <body class="research-bg">
 
 <div class="topbar">
-<div class="logo">📊 MediBlock</div>
-<div class="logout"><a href="/research_home">Back</a></div>
+    <div class="logo">📊 MediBlock</div>
+    <div class="logout"><a href="/research_home">Back</a></div>
 </div>
 
-<h2 class="dashboard-title">Submit Research Findings</h2>
+<div class="form-container">
 
-<div class="form-box">
+<h2>Submit Research Findings</h2>
 
 <form method="POST">
 
-Finding Title
-<input type="text" name="finding">
+<input type="text" name="title" placeholder="Enter Finding Title" required>
 
-Details
-<textarea name="details"></textarea>
+<textarea name="details" placeholder="Enter Details" required></textarea>
 
 <button type="submit">Submit</button>
 

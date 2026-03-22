@@ -1,94 +1,109 @@
-body{
-margin:0;
-font-family:Segoe UI;
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
 }
 
-
-/* BACKGROUND */
-
-.research-bg{
-background: linear-gradient(135deg,#3593e6,#ff9800);
-min-height:100vh;
+/* Background */
+.research-bg {
+    background: linear-gradient(135deg, #1e88e5, #ff9800);
+    min-height: 100vh;
 }
 
-
-/* TITLE */
-
-.dashboard-title{
-text-align:center;
-color:white;
-padding-top:20px;
+/* Topbar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: rgba(0,0,0,0.2);
+    color: white;
 }
 
-
-/* CARD GRID */
-
-.card-container{
-
-width:85%;
-margin:40px auto;
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-
-gap:30px;
-
+.logo {
+    font-size: 20px;
+    font-weight: bold;
 }
 
-
-/* CARDS */
-
-.feature-card{
-
-background:white;
-
-padding:30px;
-
-border-radius:20px;
-
-text-align:center;
-
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
-
-transition:0.3s;
-
+.logout a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-
-.feature-card img{
-
-width:80px;
-
-margin-bottom:15px;
-
+/* Container */
+.container {
+    width: 80%;
+    margin: auto;
+    margin-top: 40px;
 }
 
-
-.feature-card h3{
-
-color:#d06a10;
-
+/* Title */
+.dashboard-title {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
 }
 
-
-.feature-card a{
-
-background:#d06a10;
-
-color:white;
-
-padding:8px 20px;
-
-border-radius:8px;
-
-text-decoration:none;
-
+/* TABLE */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
+.styled-table th {
+    background: #1976d2;
+    color: white;
+    padding: 15px;
+}
 
-.feature-card:hover{
+.styled-table td {
+    padding: 12px;
+    text-align: center;
+}
 
-transform:scale(1.07);
+.styled-table tr:nth-child(even) {
+    background: #f2f2f2;
+}
 
+/* FORM */
+.form-container {
+    width: 40%;
+    margin: auto;
+    margin-top: 80px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.form-container input,
+.form-container textarea {
+    width: 90%;
+    margin: 10px;
+    padding: 10px;
+}
+
+.form-container button {
+    padding: 10px 20px;
+    background: #1e88e5;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* CHART */
+.chart-container {
+    width: 80%;
+    margin: auto;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.chart-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px;
 }

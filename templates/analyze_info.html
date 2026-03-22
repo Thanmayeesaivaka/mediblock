@@ -8,31 +8,39 @@
 <body class="research-bg">
 
 <div class="topbar">
-<div class="logo">📊 MediBlock</div>
-<div class="logout"><a href="/research_home">Back</a></div>
+    <div class="logo">📊 MediBlock</div>
+    <div class="logout"><a href="/research_home">Back</a></div>
 </div>
+
+<div class="container">
 
 <h2 class="dashboard-title">Analyze Medical Information</h2>
 
-<table>
+<table class="styled-table">
 
+<thead>
 <tr>
 <th>Patient ID</th>
 <th>Disease</th>
 <th>Treatment</th>
 <th>Date</th>
 </tr>
+</thead>
 
+<tbody>
 {% for row in data %}
-
-<td>{{ row.get('patient_id') }}</td>
-<td>{{ row.get('disease') }}</td>
-<td>{{ row.get('treatment') }}</td>
-<td>{{ row.get('date') }}</td>
-
+<tr>
+<td>{{ row.patient_id }}</td>
+<td>{{ row.disease }}</td>
+<td>{{ row.treatment }}</td>
+<td>{{ row.date }}</td>
+</tr>
 {% endfor %}
+</tbody>
 
 </table>
+
+</div>
 
 </body>
 </html>
