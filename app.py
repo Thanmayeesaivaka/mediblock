@@ -247,14 +247,13 @@ def medical_history():
     return render_template("medical_history.html", history=history)
     
 
-
 @app.route("/track_treatment")
 def track_treatment():
     if "user" not in session:
         return redirect("/")
 
     history = list(treatments_collection.find({
-        "patient": session["user"]
+        "patient_name": session["user"]
     }))
 
     return render_template("track_treatment.html", history=history)

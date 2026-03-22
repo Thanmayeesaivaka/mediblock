@@ -20,18 +20,18 @@
 <th>Doctor</th>
 <th>Treatment</th>
 <th>Date</th>
-<th>Hash</th>
+<th>Time</th>
+<th>Status</th>
 </tr>
 
 {% for t in history %}
-
 <tr>
-<td>{{t.doctor}}</td>
-<td>{{t.treatment}}</td>
-<td>{{t.date}}</td>
-<td>{{t.hash}}</td>
+<td>{{ t.get('doctor') }}</td>
+<td>{{ t.get('treatment') }}</td>
+<td>{{ t.get('date') }}</td>
+<td>{{ t.get('time') }}</td>
+<td>{{ t.get('status') }}</td>
 </tr>
-
 {% endfor %}
 
 </table>
