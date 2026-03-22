@@ -311,7 +311,7 @@ def generate_reports():
         }
     ]
 
-    data = list(treatments_collection.aggregate(pipeline))
+    data = list(analysis_collection.aggregate(pipeline))
 
     labels = [d["_id"] for d in data if d["_id"]]
     values = [d["count"] for d in data if d["_id"]]
