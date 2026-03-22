@@ -27,6 +27,7 @@ shared_collection = db["shared"]
 claims_collection = db["claims"]
 findings_collection = db["findings"]
 analysis_collection = db["analysis"]
+treat_collection = db["treat"]
 
 # Check connection
 try:
@@ -134,7 +135,7 @@ def treatment_history():
     if "user" not in session:
         return redirect("/")
 
-    data = list(treatments_collection.find())
+    data = list(treat_collection.find())
 
     history = []
 
