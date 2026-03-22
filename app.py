@@ -151,8 +151,10 @@ def treatment_history():
 def view_records():
     if "user" not in session:
         return redirect("/")
-    data = list(treatments_collection.find().limit(20))
-    return render_template("view_records.html", data=data)
+
+    patients = list(patients_collection.find())
+
+    return render_template("view_records.html", patients=patients)
 
 
 @app.route("/update_treatment", methods=["GET","POST"])

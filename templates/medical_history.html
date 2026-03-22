@@ -25,9 +25,9 @@
 {% for r in history %}
 
 <tr>
-<td>{{r.report_name}}</td>
-<td>{{r.uploaded_by}}</td>
-<td>{{r.hash}}</td>
+<td>{{ r.get('report_name') }}</td>
+<td>{{ r.get('uploaded_by') }}</td>
+<td>{{ r.get('hash_key') }}</td>
 </tr>
 
 {% endfor %}
