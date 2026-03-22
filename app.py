@@ -238,10 +238,11 @@ def medical_history():
         return redirect("/")
 
     history = list(reports_collection.find({
-        "patient": session["user"]
+        "patient_id": session["user"]   # ✅ FIXED
     }))
 
     return render_template("medical_history.html", history=history)
+    
 
 
 @app.route("/track_treatment")
