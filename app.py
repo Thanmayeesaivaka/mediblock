@@ -135,15 +135,17 @@ def treatment_history():
     if "user" not in session:
         return redirect("/")
 
-    data = list(treat_collection.find())
+    data = list(treat_collection.find({
+        "patient_name": session["user"]   # filter for logged-in user
+    }))
 
     history = []
 
     for t in data:
         history.append({
-            "patient": t.get("patient", ""),
+            "patient": t.get("patient_name", ""),   # ✅ FIXED
             "doctor": t.get("doctor", ""),
-            "treatment": t.get("data", ""),   # now plain text
+            "treatment": t.get("treatment", ""),    # ✅ FIXED
             "date": t.get("date", "")
         })
 
