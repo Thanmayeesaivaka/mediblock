@@ -304,12 +304,12 @@ def generate_reports():
     if "user" not in session:
         return redirect("/")
 
-    data = list(analysis_collection.find())
+    data = list(treatments_collection.find())
 
     disease_count = {}
 
     for d in data:
-        disease = d.get("treatment")  # or "disease" if you have that field
+        disease = d.get("disease")   # ✅ CHANGE HERE
 
         if disease:
             disease_count[disease] = disease_count.get(disease, 0) + 1
