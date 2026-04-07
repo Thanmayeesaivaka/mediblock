@@ -8,7 +8,7 @@ import os
 
 from database import add_user, find_user
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = "mediblock_secret"
 
 # =====================================
