@@ -2,24 +2,87 @@
 <html>
 <head>
     <title>Admin Panel</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #ff7e5f);
+            color: white;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding-top: 40px;
+        }
+
+        /* NAVBAR */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+
+        .nav h2 {
+            margin: 0;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: white;
+            background: #ff4b5c;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* CARD */
+        .card {
+            margin-top: 40px;
+            padding: 40px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+    </style>
 </head>
+
 <body>
 
 <div class="container">
 
-<div class="nav">
-    <h2>Admin Dashboard</h2>
-    <a href="/logout" class="logout">Logout</a>
+    <div class="nav">
+        <h2>Admin Dashboard</h2>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+
+    <div class="card">
+        <h3>System Info</h3>
+        <p>Welcome Admin: <b>{{user}}</b></p>
+        <p>MediBlock Blockchain Healthcare System Running</p>
+        <p>You can monitor activity from Doctor & Patient panels.</p>
+    </div>
+
 </div>
 
-<div class="card">
-<h3>System Info</h3>
-<p>Welcome Admin: <b>{{user}}</b></p>
-<p>MediBlock Blockchain Healthcare System Running</p>
-<p>You can monitor activity from Doctor & Patient panels.</p>
-</div>
-
-</div>
 </body>
 </html>
