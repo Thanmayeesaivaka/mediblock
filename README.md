@@ -127,3 +127,24 @@ Medical Record
 SHA-256 Hash
       ↓
 Integrity Verification
+
+## ☁️ Cloud Integration
+
+MediBlock uses cloud technology to deploy the web application and securely store healthcare-related information. The application is deployed on **Render Cloud**, while **MongoDB Atlas** is used as the cloud database for storing user details, treatment information, medical reports, research findings, insurance claims, and other application data.
+
+### Cloud Architecture
+
+```text
+                User
+                  │
+                  ▼
+        ┌──────────────────┐
+        │   Render Cloud   │
+        │  Flask Web App   │
+        └────────┬─────────┘
+                 │
+                 ▼
+        ┌──────────────────┐
+        │   MongoDB Atlas  │
+        │  Cloud Database  │
+        └──────────────────┘
