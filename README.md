@@ -106,6 +106,10 @@ Insurance personnel can:
 The administrator provides centralized access for managing and monitoring the application.
 
 ---
+## ☁️ Cloud Integration
+
+MediBlock uses cloud technology to deploy the web application and store healthcare-related information. The application is deployed on **Render Cloud**, while **MongoDB Atlas** is used as the cloud database.
+
 ### Cloud Architecture
 
 ```text
@@ -119,23 +123,57 @@ The administrator provides centralized access for managing and monitoring the ap
                  │
                  ▼
         ┌──────────────────┐
-        │   MongoDB Atlas  │
+        │  MongoDB Atlas   │
         │  Cloud Database  │
         └──────────────────┘
+```
 
+### Cloud Technologies Used
 
+- **Render Cloud** – Used to deploy and host the MediBlock Flask application.
+- **MongoDB Atlas** – Used for cloud-based storage of application and healthcare data.
+- **Gunicorn** – Used as the production application server on Render.
+- **GitHub** – Used for source code management and deployment integration.
+
+### Benefits of Cloud Integration
+
+- 🌐 Provides online access to the MediBlock application.
+- ☁️ Enables cloud-based storage of application data.
+- 🔄 Allows application updates through GitHub and Render.
+- 📈 Provides a scalable foundation for future expansion.
+- 🔐 Works together with encryption and hashing mechanisms to improve data security.
+
+### Cloud Data Flow
+
+```text
+User
+  ↓
+MediBlock Web Application
+  ↓
+Render Cloud
+  ↓
+Flask Backend
+  ↓
+MongoDB Atlas
+  ↓
+Cloud Data Storage
+```
+
+The integration of **Render Cloud and MongoDB Atlas** transforms MediBlock from a locally hosted application into a **cloud-accessible healthcare management system**.
+
+---
 
 ## 🔐 Security Features
 
-MediBlock incorporates multiple security mechanisms:
+MediBlock incorporates multiple security mechanisms to protect sensitive healthcare information and maintain data integrity.
 
-### Encryption
+### 🔒 Encryption
 
 Sensitive treatment information is encrypted using the **Fernet symmetric encryption mechanism** before being stored.
 
-### Cryptographic Hashing
+### 🔑 Cryptographic Hashing
 
-A SHA-256 hash is generated for treatment information to help verify data integrity.
+A **SHA-256 hash** is generated for treatment information to help verify data integrity.
 
 Example:
 
@@ -145,4 +183,4 @@ Medical Record
 SHA-256 Hash
       ↓
 Integrity Verification
-
+```
